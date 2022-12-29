@@ -1,0 +1,7 @@
+{
+	"editor.wordWrap": "on",
+	"files.eol": "\n",
+	"files.trimTrailingWhitespace": true,
+	"editor.indentSize": "tabSize",
+	"editor.tabSize": 4
+}

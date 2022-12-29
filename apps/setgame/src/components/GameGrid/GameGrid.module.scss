@@ -1,0 +1,22 @@
+.GameGrid {
+	display: flex;
+
+	.Sidebar {
+		display: flex;
+		flex-direction: column;
+
+		h2 {
+			font-size: 16px;
+		}
+	}
+
+	.Grid {
+		width: 400px;
+		height: 420px;
+		background-color: white;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: wrap;
+		padding: 30px;
+	}
+}
