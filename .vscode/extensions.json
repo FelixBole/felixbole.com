@@ -2,6 +2,7 @@
 	"recommendations": [
 		"Huuums.vscode-fast-folder-structure",
 		"esbenp.prettier-vscode",
-		"eamodio.gitlens"
+		"eamodio.gitlens",
+		"dbaeumer.vscode-eslint"
 	]
 }

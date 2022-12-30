@@ -6,30 +6,38 @@ import {
 	drawCard,
 	generateLayout,
 	updateLayoutOnValidSet,
+	updateDeckAndLayoutOnShowCountChange,
 } from "setgame-fns";
 import { Button, GameCard } from "ui";
 import Styles from "./GameGrid.module.scss";
 import { serverCall } from "../../utils/serverCall";
 import { CONFIG } from "../../config";
+import { SetGame } from "../../pages/GamePage/GamePage";
 
 interface WebSocketRef {
 	current: WebSocket | null;
 }
 
-export const GameGrid = () => {
-	const [deck, setDeck] = useState<string[]>([]);
-	const [currentLayout, setCurrentLayout] = useState<string[]>([]);
+type Props = {
+	gameData: SetGame | null;
+	ws: WebSocketRef;
+	roomId: string;
+	selectedCards: string[];
+};
+
+export const GameGrid = ({
+	gameData = null,
+	ws,
+	roomId,
+	selectedCards,
+}: Props) => {
 	const [selection, setSelection] = useState<string[]>([]);
-	const [showCount, setShowCount] = useState<number>(12);
-	const [possibleSet, setPossibleSet] = useState<string[]>([]);
 	const [showSet, setShowSet] = useState<boolean>(false);
 	const [timer, setTimer] = useState<number>(0);
 	const [finalTime, setFinalTime] = useState<number>(0);
 	const [gameOver, setGameOver] = useState<boolean>(false);
 	const [doneSets, setDoneSets] = useState<number>(0);
 	const [lastDoneSet, setLastDoneSet] = useState<string[]>([]);
-
-	const ws: WebSocketRef = useRef<WebSocket>(null);
 
 	const selectDeselectCard = (
 		e: React.TouchEvent | React.MouseEvent | null,
@@ -41,117 +49,77 @@ export const GameGrid = () => {
 		else setSelection((prev) => [...prev, id]);
 	};
 
-	const resetShowCount = () => {
-		setShowCount((prev) => {
-			if (prev === 18) return 15;
-			else return 12;
-		});
+	const requestShowMore = () => {
+		const msg = {
+			eventName: "requestShowMore",
+			roomId,
+		};
+		ws?.current?.send(JSON.stringify(msg));
 	};
 
 	const autoResolve = () => {
-		if (possibleSet.length === 0) return console.log("no sets available");
+		if (gameData?.possibleSets[0]?.length === 0)
+			return console.log("no sets available");
 
-		possibleSet.forEach((id) => {
+		gameData?.possibleSets[0]?.forEach((id) => {
 			const card = document.getElementById(`gamecard-${id}`);
 			card?.click();
 		});
 	};
 
 	const isInSet = (id: string) => {
-		return possibleSet.includes(id);
+		return gameData?.possibleSets[0].includes(id);
 	};
 
-	const updatePossibleSet = (layout: string[]) => {
-		const possibleSets = findSets(layout);
-		setPossibleSet(possibleSets.length !== 0 ? possibleSets[0] : []);
-		return possibleSets;
+	const isInSelectedCards = (id: string) => {
+		return selectedCards.includes(id);
+	};
+
+	const sendSelectionMsg = (ws: WebSocketRef, selection: string[]) => {
+		const msg = {
+			eventName: "foundSet",
+			roomId,
+			gameData,
+			selection,
+		};
+		ws?.current?.send(JSON.stringify(msg));
 	};
 
 	useEffect(() => {
 		if (selection.length !== 3) return;
 
 		if (isSet(selection)) {
-			resetShowCount();
-
-			// set new deck with current values of deck (without layout)
-			const newDeck = [...deck];
-
-			// Re-render the layout with 3 random cards from the remaining deck without deleting them
-			// Do operations outside of setstate othewise setdeck won't have the updated array
-			const layout = updateLayoutOnValidSet(
-				newDeck,
-				[...currentLayout],
-				selection
-			);
-
-			const possibleSets = updatePossibleSet(layout);
-			setCurrentLayout(layout);
-			setDeck(newDeck);
-			setSelection([]);
-
-			if (showSet) {
-				setShowSet(false);
-			} else {
-				setDoneSets((prev) => prev + 1);
-				setLastDoneSet(selection);
-			}
-
-			if (possibleSets.length === 0 && newDeck.length === 0) {
-				setGameOver(true);
-				setFinalTime(timer);
-			}
+			sendSelectionMsg(ws, selection);
 		} else {
+			// TODO SEND MESSAGE TO SERVER FOR WRONG PICK
 			setSelection([]);
 			setDoneSets((prev) => (prev > 0 ? prev - 1 : 0));
 		}
 	}, [selection]);
 
 	useEffect(() => {
-		if (!currentLayout.length || !deck.length) return;
-		const layout = [...currentLayout];
-		const newDeck = [...deck];
+		if (!ws.current) return;
 
-		if (showCount === 12) {
-			if (currentLayout.length === 15) {
-				// Reapply last three to deck
-				for (let i = 0; i < 3; i++) {
-					newDeck.push(layout.pop()!);
-				}
-			} else if (currentLayout.length === 18) {
-				for (let i = 0; i < 6; i++) {
-					newDeck.push(layout.pop()!);
-				}
+		const handleSelectionReset = (ev: MessageEvent<any>) => {
+			const data: any = JSON.parse(ev.data);
+			switch (data.eventName) {
+				case "foundSet":
+					setSelection([]);
+					setShowSet(false);
+				default:
+					break;
 			}
-		} else if (showCount === 15) {
-			if (currentLayout.length === 12) {
-				// Get three more
-				for (let i = 0; i < 3; i++) {
-					layout.push(drawCard(newDeck, true));
-				}
-			} else if (currentLayout.length === 18) {
-				for (let i = 0; i < 3; i++) {
-					newDeck.push(layout.pop()!);
-				}
-			}
-		} else if (showCount === 18) {
-			for (let i = 0; i < 3; i++) {
-				layout.push(drawCard(newDeck, true));
-			}
-		}
+		};
 
-		setCurrentLayout(layout);
-		updatePossibleSet(layout);
-		setDeck(newDeck);
-	}, [showCount]);
+		ws.current.addEventListener("message", handleSelectionReset);
+
+		return () => {
+			ws.current?.removeEventListener("message", handleSelectionReset);
+		};
+	}, [ws]);
 
 	// INIT
 	useEffect(() => {
-		const newDeck = generateDeck();
-		const layout = generateLayout(newDeck, showCount);
-		setDeck(newDeck);
-		setCurrentLayout(layout);
-		updatePossibleSet(layout);
-
 		const interval = setInterval(() => {
 			setTimer((timer) => timer + 1);
 		}, 1000);
@@ -160,28 +128,6 @@ export const GameGrid = () => {
 			clearInterval(interval);
 		};
 	}, []);
-
-	const setupWS = () => {
-		ws.current = new WebSocket(CONFIG.wss);
-		ws.current.onopen = () => {
-			console.log("Connection opened");
-		};
-		ws.current.onmessage = (event) => {
-			console.log("Received message:", event.data);
-		};
-
-		ws.current.onclose = () => {
-			console.log("WebSocket connection closed");
-		};
-
-		ws.current.onerror = (e) => {
-			console.log(e);
-		};
-	};
-
-	const sendMsg = () => {
-		ws.current?.send("TEST MESSAGE");
-	};
 
 	const getScore = () => {
 		return Math.floor(doneSets * (100 / finalTime) * 1000);
@@ -194,25 +140,23 @@ export const GameGrid = () => {
 				<Button
 					onclick={() => {
 						setShowSet(false);
-						setShowCount((prev) => prev + 3);
+						// setShowCount((prev) => prev + 3);
 					}}
 				>
 					Show more
 				</Button>
 				<Button onclick={() => setShowSet(true)}>Show Set</Button>
 				<Button onclick={() => autoResolve()}>Resolve Set</Button>
-				<Button onclick={() => serverCall.POST("/login")}>Login</Button>
-				<Button onclick={() => serverCall.DELETE("/logout")}>Logout</Button>
-				<Button onclick={() => setupWS()}>Setup WS</Button>
-				<Button onclick={() => sendMsg()}>Test message</Button>
 
 				<div>
 					{gameOver ? <>Final time: {finalTime}</> : <>Your time: {timer}s</>}
 				</div>
-				<div>Possible set: {(possibleSet.length !== 0).toString()}</div>
-				<div>Deck length: {deck.length}</div>
-				<div>Show count: {showCount}</div>
-				<div>Done sets: {doneSets}</div>
+				<div>
+					Possible set: {(gameData?.possibleSets?.length !== 0).toString()}
+				</div>
+				<div>Deck length: {gameData?.deck.length}</div>
+				<div>Show count: {gameData?.showCount}</div>
+				<div>Showing set: {showSet.toString()}</div>
 				<div>{gameOver ? <>Score : Score: {getScore()}</> : null}</div>
 
 				<h3>Last set</h3>
@@ -226,9 +170,17 @@ export const GameGrid = () => {
 						/>
 					))}
 				</div>
+				<h5>Players:</h5>
+				<div>
+					{gameData?.players.map((p, idx) => (
+						<p>
+							Player {idx + 1}: {p.currentScore}
+						</p>
+					))}
+				</div>
 			</div>
 			<div className={Styles.Grid}>
-				{currentLayout.map((id, idx) => (
+				{gameData?.currentLayout.map((id, idx) => (
 					<GameCard
 						id={id}
 						key={`gamecard-${id}`}

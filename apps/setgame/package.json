@@ -9,11 +9,13 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@types/react-router-dom": "^5.3.3",
+		"functions": "workspace:*",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"ui": "workspace:*",
-		"functions": "workspace:*",
-		"setgame-fns": "workspace:*"
+		"react-router-dom": "^6.6.1",
+		"setgame-fns": "workspace:*",
+		"ui": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/react": "^18.0.26",

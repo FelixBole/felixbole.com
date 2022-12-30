@@ -9,7 +9,7 @@ export const serverCall = {
 			headers: {
 				"content-type": "application/json",
 			},
-			body: JSON.stringify(body),
+			body: method !== "GET" ? JSON.stringify(body) : undefined,
 		});
 		const data = await res.json();
 		return data;
