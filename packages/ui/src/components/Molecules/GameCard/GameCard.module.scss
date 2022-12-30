@@ -12,7 +12,6 @@ $width: 80px;
     margin: 3px;
 
     .inner {
-        animation: cardFlip 1.2s ease-in forwards;
         background-color: transparent;
         max-width: $width;
         max-height: $height;
@@ -33,6 +32,10 @@ $width: 80px;
         height: 100%;
         transform-style: preserve-3d;
         transition: transform 0.8s;
+
+        &Animated {
+            animation: cardFlip 1.2s ease-in forwards;
+        }
     }
 
     .front,
@@ -76,6 +79,31 @@ $width: 80px;
 .highlighted {
     .inner .back {
         background-color: pink;
+    }
+}
+
+.tiny {
+    width: $width / 2.5;
+    height: $height / 2.5;
+    max-height: $height / 2.5;
+    max-width: $width / 2.5;
+    min-width: 0;
+    min-height: 0;
+
+    .inner {
+        transform: translateY(0) rotateY(180deg);
+        min-height: $height / 2.5;
+        min-width: $width / 2.5;
+
+        div {
+            height: 15px;
+            width: 100%;
+            svg {
+                width: 20px;
+                height: 10px;
+                padding: 0 0 2px 5px;
+            }
+        }
     }
 }
 

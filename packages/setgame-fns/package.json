@@ -1,0 +1,11 @@
+{
+	"name": "setgame-fns",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"main": "src/index.ts",
+	"scripts": {
+		"format": "prettier --write ./src"
+	},
+	"prettier": "tools/prettier.config.js"
+}

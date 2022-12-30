@@ -9,6 +9,14 @@ import { SVG_MAP } from './assetMap';
 // third is color
 // 1: red, 2: green, 3: blue
 
+type IDFillType = {
+    [key: string]: 'stroke' | 'filled' | 'striped';
+};
+
+type IDColor = {
+    [key: string]: 'red' | 'green' | 'blue';
+};
+
 const ID_SVG: { [key: string]: any } = {
     '1': SVG_MAP.oval,
     '2': SVG_MAP.diamond,
