@@ -1,2 +1,9 @@
+@import "../../shared/styles/background";
+
 .GamePage {
+	background-image: $bg-image-circle-gradient;
+	min-height: 100vh;
+}
+
+.Waiting {
 }

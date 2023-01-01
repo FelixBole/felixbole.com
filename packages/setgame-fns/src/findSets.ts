@@ -1,4 +1,5 @@
 import { isSet } from "./isSet";
+import { SetGame } from "./@types";
 
 /**
  * Helper to find possible sets in the current layed out
@@ -36,4 +37,11 @@ export const findSets = (cards: string[]) => {
 	const filtered = filterMultiDim(sorted);
 
 	return filtered;
+};
+
+export const updatePossibleSets = (game: SetGame) => {
+    const newPossibleSets = findSets(game.currentLayout);
+    game.possibleSets = newPossibleSets;
+    game.setIsPossible = newPossibleSets.length !== 0;
+    return game;
 };

@@ -1,18 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-	generateDeck,
-	findSets,
-	isSet,
-	drawCard,
-	generateLayout,
-	updateLayoutOnValidSet,
-	updateDeckAndLayoutOnShowCountChange,
-} from "setgame-fns";
+import { useEffectOnce } from "hooks";
+import React, { useEffect, useState } from "react";
+import { isGameOver, isSet, SetGame } from "setgame-fns";
 import { Button, GameCard } from "ui";
 import Styles from "./GameGrid.module.scss";
-import { serverCall } from "../../utils/serverCall";
-import { CONFIG } from "../../config";
-import { SetGame } from "../../pages/GamePage/GamePage";
 
 interface WebSocketRef {
 	current: WebSocket | null;
@@ -25,19 +15,14 @@ type Props = {
 	selectedCards: string[];
 };
 
-export const GameGrid = ({
-	gameData = null,
-	ws,
-	roomId,
-	selectedCards,
-}: Props) => {
+export const GameGrid = ({ gameData = null, ws, roomId }: Props) => {
 	const [selection, setSelection] = useState<string[]>([]);
 	const [showSet, setShowSet] = useState<boolean>(false);
-	const [timer, setTimer] = useState<number>(0);
-	const [finalTime, setFinalTime] = useState<number>(0);
-	const [gameOver, setGameOver] = useState<boolean>(false);
-	const [doneSets, setDoneSets] = useState<number>(0);
-	const [lastDoneSet, setLastDoneSet] = useState<string[]>([]);
+	const [timer, setTimer] = useState<number>(
+		gameData?.startedAt
+			? Math.floor((Date.now() - gameData?.startedAt) / 1000)
+			: 0
+	);
 
 	const selectDeselectCard = (
 		e: React.TouchEvent | React.MouseEvent | null,
@@ -51,15 +36,22 @@ export const GameGrid = ({
 
 	const requestShowMore = () => {
 		const msg = {
-			eventName: "requestShowMore",
+			eventName: "showMore",
+			roomId,
+		};
+		ws?.current?.send(JSON.stringify(msg));
+	};
+
+	const sendInvalidSet = () => {
+		const msg = {
+			eventName: "invalidSet",
 			roomId,
 		};
 		ws?.current?.send(JSON.stringify(msg));
 	};
 
 	const autoResolve = () => {
-		if (gameData?.possibleSets[0]?.length === 0)
-			return console.log("no sets available");
+		if (!gameData?.setIsPossible) return console.log("no sets available");
 
 		gameData?.possibleSets[0]?.forEach((id) => {
 			const card = document.getElementById(`gamecard-${id}`);
@@ -68,11 +60,7 @@ export const GameGrid = ({
 	};
 
 	const isInSet = (id: string) => {
-		return gameData?.possibleSets[0].includes(id);
-	};
-
-	const isInSelectedCards = (id: string) => {
-		return selectedCards.includes(id);
+		return gameData?.possibleSets[0]?.includes(id);
 	};
 
 	const sendSelectionMsg = (ws: WebSocketRef, selection: string[]) => {
@@ -85,16 +73,33 @@ export const GameGrid = ({
 		ws?.current?.send(JSON.stringify(msg));
 	};
 
+	const isLastInvalidPlayer = (uuid: string) => {
+		return gameData?.lastInvalidPlayerID === uuid;
+	};
+
+	const isLastValidPlayer = (uuid: string) => {
+		return gameData?.lastValidPlayerID === uuid;
+	};
+
+	const playerHighlight = (uuid: string) => {
+		if (isLastInvalidPlayer(uuid)) {
+			return "red";
+		}
+
+		if (isLastValidPlayer(uuid)) {
+			return "green";
+		}
+	};
+
 	useEffect(() => {
 		if (selection.length !== 3) return;
 
 		if (isSet(selection)) {
 			sendSelectionMsg(ws, selection);
 		} else {
-			// TODO SEND MESSAGE TO SERVER FOR WRONG PICK
-			setSelection([]);
-			setDoneSets((prev) => (prev > 0 ? prev - 1 : 0));
+			sendInvalidSet();
 		}
+		setSelection([]);
 	}, [selection]);
 
 	useEffect(() => {
@@ -119,7 +124,7 @@ export const GameGrid = ({
 	}, [ws]);
 
 	// INIT
-	useEffect(() => {
+	useEffectOnce(() => {
 		const interval = setInterval(() => {
 			setTimer((timer) => timer + 1);
 		}, 1000);
@@ -127,69 +132,92 @@ export const GameGrid = ({
 		return () => {
 			clearInterval(interval);
 		};
-	}, []);
+	});
 
-	const getScore = () => {
-		return Math.floor(doneSets * (100 / finalTime) * 1000);
-	};
+	// const getScore = () => {
+	// 	return Math.floor(doneSets * (100 / finalTime) * 1000);
+	// };
 
 	return (
 		<div className={Styles.GameGrid}>
 			<div className={Styles.Sidebar}>
-				{gameOver ? <h2>GAME OVER</h2> : <h2>GAME RUNNING</h2>}
-				<Button
-					onclick={() => {
-						setShowSet(false);
-						// setShowCount((prev) => prev + 3);
-					}}
-				>
-					Show more
-				</Button>
-				<Button onclick={() => setShowSet(true)}>Show Set</Button>
-				<Button onclick={() => autoResolve()}>Resolve Set</Button>
-
-				<div>
-					{gameOver ? <>Final time: {finalTime}</> : <>Your time: {timer}s</>}
-				</div>
-				<div>
-					Possible set: {(gameData?.possibleSets?.length !== 0).toString()}
-				</div>
-				<div>Deck length: {gameData?.deck.length}</div>
-				<div>Show count: {gameData?.showCount}</div>
-				<div>Showing set: {showSet.toString()}</div>
-				<div>{gameOver ? <>Score : Score: {getScore()}</> : null}</div>
+				{gameData !== null && isGameOver(gameData) ? (
+					<>GAME OVER</>
+				) : (
+					<>
+						<Button
+							onclick={() => {
+								setShowSet(false);
+								requestShowMore();
+							}}
+						>
+							Show more
+						</Button>
+						<Button onclick={() => setShowSet(true)}>Show Set</Button>
+						<Button onclick={() => autoResolve()}>Resolve Set</Button>
+						<div>
+							Possible set: {(gameData?.possibleSets?.length !== 0).toString()}
+						</div>
+						<div>Deck length: {gameData?.deck.length}</div>
+						<div>Showing: {gameData?.showCount}</div>
+						<div>Time: {timer}</div>
+					</>
+				)}
 
 				<h3>Last set</h3>
 				<div style={{ display: "flex" }}>
-					{lastDoneSet.map((id) => (
-						<GameCard
-							id={id}
-							key={`gamecard-${id}`}
-							clicked={selection.includes(id)}
-							tiny={true}
-						/>
-					))}
+					{gameData !== null
+						? gameData?.lastSet.map((id) => (
+								<GameCard
+									id={id}
+									key={`gamecard-${id}`}
+									clicked={selection.includes(id)}
+									tiny={true}
+								/>
+						  ))
+						: null}
 				</div>
 				<h5>Players:</h5>
 				<div>
 					{gameData?.players.map((p, idx) => (
-						<p>
-							Player {idx + 1}: {p.currentScore}
+						<p key={p.uuid}>
+							<h5
+								style={{
+									color: playerHighlight(p.uuid),
+								}}
+							>
+								{p.name}: {p.currentScore}
+							</h5>
+							<small>{p.requestShowMore ? "Requested Show More" : null}</small>
 						</p>
 					))}
 				</div>
 			</div>
 			<div className={Styles.Grid}>
-				{gameData?.currentLayout.map((id, idx) => (
-					<GameCard
-						id={id}
-						key={`gamecard-${id}`}
-						onclick={(e, selected, id) => selectDeselectCard(e, selected, id)}
-						highlighted={showSet && isInSet(id)}
-						clicked={selection.includes(id)}
-						animationDelay={idx * 0.03}
-					/>
-				))}
+				{gameData && !isGameOver(gameData) ? (
+					gameData?.currentLayout.map((id, idx) => (
+						<GameCard
+							id={id}
+							key={`gamecard-${id}`}
+							onclick={(e, selected, id) => selectDeselectCard(e, selected, id)}
+							highlighted={showSet && isInSet(id)}
+							clicked={selection.includes(id)}
+							animationDelay={idx * 0.03}
+						/>
+					))
+				) : (
+					<>
+						<h3>Score</h3>
+						<ol>
+							{gameData !== null &&
+								gameData?.players.map((p) => (
+									<li>
+										{p.name} - {p.currentScore} sets
+									</li>
+								))}
+						</ol>
+					</>
+				)}
 			</div>
 		</div>
 	);

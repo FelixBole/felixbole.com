@@ -83,17 +83,18 @@ $width: 80px;
 }
 
 .tiny {
-    width: $width / 2.5;
-    height: $height / 2.5;
-    max-height: $height / 2.5;
-    max-width: $width / 2.5;
+    width: calc($width / 2.5);
+    height: calc($height / 2.5);
+    max-height: calc($height / 2.5);
+    max-width: calc($width / 2.5);
     min-width: 0;
     min-height: 0;
+    background-color: white;
 
     .inner {
         transform: translateY(0) rotateY(180deg);
-        min-height: $height / 2.5;
-        min-width: $width / 2.5;
+        min-height: calc($height / 2.5);
+        min-width: calc($width / 2.5);
 
         div {
             height: 15px;

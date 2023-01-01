@@ -1,0 +1,17 @@
+{
+	"name": "hooks",
+	"private": true,
+	"version": "0.1.0",
+	"main": "src/index.ts",
+	"scripts": {
+		"format": "prettier --write ./src"
+	},
+	"prettier": "tools/prettier.config.js",
+	"devDependencies": {
+		"@types/react": "^18.0.26",
+		"typescript": "^4.9.4"
+	},
+	"dependencies": {
+		"react": "^18.2.0"
+	}
+}

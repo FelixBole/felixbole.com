@@ -1,31 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Styles from "./GamePage.module.scss";
 import { useNavigate, useParams } from "react-router-dom";
 import { GameGrid } from "../../components/GameGrid/GameGrid";
 import { CONFIG } from "../../config";
 import { Button } from "ui";
+import { Player, SetGame } from "setgame-fns";
+import { useEffectOnce } from "hooks";
 
 type GamePageProps = {};
 
 interface WebSocketRef {
 	current: WebSocket | null;
 }
-
-type Player = {
-	uuid: string;
-	wins: number;
-	currentScore: number;
-	ready: boolean;
-};
-
-export type SetGame = {
-	players: Player[];
-	deck: string[];
-	currentLayout: string[];
-	setIsPossible: boolean;
-	possibleSets: string[][];
-	showCount: number;
-};
 
 interface WebSocketResponse {
 	eventName: string;
@@ -89,11 +75,21 @@ export const GamePage = (props: GamePageProps) => {
 		navigate("/");
 	};
 
-	useEffect(() => {
+	const updateGameData = (data: any) => {
+		setGameData((prev) => {
+			return {
+				...prev,
+				...data,
+			};
+		});
+	};
+
+	useEffectOnce(() => {
 		// Open socket to be notified of new players joining
 		ws.current = new WebSocket(CONFIG.wss);
 		ws.current.onopen = () => {
 			console.log("Connection opened");
+			join();
 		};
 		ws.current.onmessage = (event) => {
 			const data: any = JSON.parse(event.data);
@@ -104,15 +100,7 @@ export const GamePage = (props: GamePageProps) => {
 
 			switch (data.eventName) {
 				case "playerJoined":
-					typedData = data as WebSocketResponse;
-					setCurrentPlayers(typedData?.players || []);
-					break;
-
 				case "playerReady":
-					typedData = data as WebSocketResponse;
-					setCurrentPlayers(typedData?.players || []);
-					break;
-
 				case "playerExit":
 					typedData = data as WebSocketResponse;
 					setCurrentPlayers(typedData?.players || []);
@@ -124,14 +112,21 @@ export const GamePage = (props: GamePageProps) => {
 					break;
 
 				case "foundSet":
-					setGameData((prev) => {
-						return {
-							...prev,
-							...(data.game || {}),
-						};
-					});
+					updateGameData(data.game || {});
 					setSelectedCards([...(data.selection || [])]);
 					break;
+
+				case "showMore":
+				case "showMoreRequested":
+					updateGameData(data.game || {});
+					break;
+
+				case "invalidSet":
+					updateGameData(data.game || {});
+					break;
+
+				case "gameOver":
+					updateGameData(data.game || {});
 
 				default:
 					break;
@@ -139,17 +134,15 @@ export const GamePage = (props: GamePageProps) => {
 		};
 
 		ws.current.onclose = () => {
-			console.log("WebSocket connection closed");
+			navigate("/");
 		};
 
 		ws.current.onerror = (e) => {
-			location.reload();
+			navigate("/");
 		};
 
 		// TODO Add window events to cancel room if done or no players left
-	}, []);
-
-	console.log({ selectedCardsFrom: selectedCards });
+	});
 
 	return (
 		<div className={Styles.GamePage}>
@@ -164,14 +157,14 @@ export const GamePage = (props: GamePageProps) => {
 					/>
 				</>
 			) : (
-				<>
+				<div className={Styles.Waiting}>
 					<h1>Waiting for players</h1>
 					<h3>Room: {roomId}</h3>
 					<h5>Players : {currentPlayers.length}</h5>
 					<ul>
 						{currentPlayers.map((p: any) => (
 							<li key={p.uuid}>
-								{p.uuid!} - {p.ready ? "Ready" : "Preparing"}
+								{p.name} - {p.ready ? "Ready" : "Preparing"}
 							</li>
 						))}
 					</ul>
@@ -180,9 +173,8 @@ export const GamePage = (props: GamePageProps) => {
 						<Button onclick={() => ready()}>Ready</Button>
 					) : null}
 					<Button onclick={() => quitGame()}>Quit</Button>
-				</>
+				</div>
 			)}
-			{/* <GameGrid /> */}
 		</div>
 	);
 };

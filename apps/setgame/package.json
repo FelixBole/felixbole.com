@@ -15,7 +15,8 @@
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.6.1",
 		"setgame-fns": "workspace:*",
-		"ui": "workspace:*"
+		"ui": "workspace:*",
+		"hooks": "workspace:*"
 	},
 	"devDependencies": {
 		"@types/react": "^18.0.26",

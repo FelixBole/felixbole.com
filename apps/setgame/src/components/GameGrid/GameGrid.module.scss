@@ -1,5 +1,6 @@
 .GameGrid {
 	display: flex;
+	height: 100vh;
 
 	.Sidebar {
 		display: flex;
@@ -11,8 +12,10 @@
 	}
 
 	.Grid {
+		margin: 5px;
+		border-radius: 8px;
 		width: 400px;
-		height: 420px;
+		height: 440px;
 		background-color: white;
 		display: flex;
 		flex-direction: column;

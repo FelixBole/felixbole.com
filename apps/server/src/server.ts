@@ -24,6 +24,10 @@ export const startServer = (port = 3040) => {
 
     app.post("/login", function (req, res) {
         if (req.session.userId) {
+            if (req?.body?.name !== req.session.name) {
+                req.session.name = req.body.name;
+            }
+
             return res.json({
                 message: "Already connected ",
                 sid: req.session.userId,
@@ -33,6 +37,7 @@ export const startServer = (port = 3040) => {
         const id = crypto.randomUUID();
 
         req.session.userId = id;
+        req.session.name = req.body.name || "";
         res.json({
             result: "OK",
             message: "Session updated",
@@ -51,7 +56,7 @@ export const startServer = (port = 3040) => {
     });
 
     app.get("/set/newgame", async (req, res) => {
-        const { newGame, roomId } = startNewGame([]);
+        const { newGame, roomId } = startNewGame();
 
         return res.json({ newGame, roomId });
     });

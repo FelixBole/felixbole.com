@@ -1,2 +1,11 @@
+@import "../../shared/styles/background";
+
 .SetupPage {
+	min-height: 100vh;
+	background-image: $bg-image-circle-gradient;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 }

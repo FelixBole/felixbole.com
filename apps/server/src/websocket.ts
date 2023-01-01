@@ -4,22 +4,18 @@ import { WebSocket, WebSocketServer } from "ws";
 import cookie from "cookie";
 import cookieParser from "cookie-parser";
 import { MemoryStore } from "express-session";
-import {
-    addPlayer,
-    findGameByRoomId,
-    findPlayer,
-    findPlayerIndex,
-    removePlayer,
-    SetGame,
-    setPlayerReady,
-} from "./setgame";
+import { findGameByRoomId } from "./setgame";
 import {
     foundSet,
+    gameReset,
+    invalidSet,
     playerExit,
     playerJoined,
     playerReady,
+    requestShowMore,
+    SetGameSocketCallbackParams,
 } from "./setgameSocket";
-import { updateLayoutOnValidSet } from "setgame-fns";
+import { GameOfSet } from "setgame-fns";
 
 type WebSocketServerSetup = {
     wss: WebSocketServer;
@@ -30,12 +26,13 @@ interface ExtendedWebSocket extends WebSocket {
     isAlive?: boolean;
 }
 
+const userIDWSMap = new Map<string, WebSocket>();
+
 export const setupWebSocketServer = (
     server: Server<typeof IncomingMessage, typeof ServerResponse>,
     store: MemoryStore
 ) => {
-    const map = new Map();
-    const wss = new WebSocketServer({ clientTracking: true, noServer: true });
+    const wss = new WebSocketServer({ clientTracking: false, noServer: true });
 
     // Serves to ping clients and check for broken connections
     function heartbeat() {
@@ -85,6 +82,7 @@ export const setupWebSocketServer = (
     wss.on("connection", (ws, request) => {
         const req = request as Request;
         const userId = req?.session?.userId;
+        const name = req?.session?.name;
 
         if (!userId) return;
 
@@ -92,44 +90,55 @@ export const setupWebSocketServer = (
         (ws as ExtendedWebSocket).isAlive = true;
         ws.on("pong", heartbeat);
 
-        map.set(userId, ws);
+        userIDWSMap.set(userId, ws);
 
         ws.on("message", function (rawData, isBinary) {
             const data = JSON.parse(rawData.toString());
 
-            const game: SetGame | null = data.roomId
+            const game: GameOfSet | null = data.roomId
                 ? findGameByRoomId(data.roomId)
                 : null;
 
             if (!game) return;
 
-            if (data.eventName === "playerJoined") {
-                return playerJoined(wss, game, userId, data.roomId, isBinary);
-            } else if (data.eventName === "playerReady") {
-                return playerReady(wss, game, userId, data.roomId, isBinary);
-            } else if (data.eventName === "playerExit") {
-                return playerExit(wss, game, userId, data.roomId, isBinary);
-            } else if (data.eventName === "foundSet") {
-                return foundSet(
-                    wss,
-                    game,
-                    data?.selection || [],
-                    userId,
-                    data.roomId,
-                    isBinary
-                );
+            const callbackParams: SetGameSocketCallbackParams = {
+                clients: game.players.map((p) => userIDWSMap.get(p.uuid)),
+                uuid: userId,
+                game,
+                isBinary,
+                roomId: data.roomId,
+                selection: data.selection || [],
+            };
+
+            switch (data.eventName) {
+                case "playerJoined":
+                    return playerJoined(callbackParams, name);
+                case "playerReady":
+                    return playerReady(callbackParams);
+                case "playerExit":
+                    return playerExit(callbackParams);
+                case "foundSet":
+                    return foundSet(callbackParams);
+                case "showMore":
+                    return requestShowMore(callbackParams);
+                case "invalidSet":
+                    return invalidSet(callbackParams);
+                case "gameReset":
+                    return gameReset(callbackParams);
+                default:
+                    break;
             }
         });
 
         ws.on("close", function () {
-            map.delete(userId);
+            userIDWSMap.delete(userId);
         });
     });
 
     // Set interval for ping to check broken connections
     const interval = setInterval(() => {
-        if (!wss.clients) return;
-        wss.clients.forEach((ws) => {
+        // We're not tracking clients so we do this manually from the stored map
+        userIDWSMap.forEach((ws) => {
             if ((ws as ExtendedWebSocket).isAlive === false)
                 return ws.terminate();
 
@@ -142,5 +151,23 @@ export const setupWebSocketServer = (
         clearInterval(interval);
     });
 
-    return { wss, map } as WebSocketServerSetup;
+    return { wss, map: userIDWSMap } as WebSocketServerSetup;
+};
+
+export const sendToAllClients = (message: string, isBinary: boolean) => {
+    userIDWSMap.forEach((client) => {
+        if (client.readyState !== WebSocket.OPEN) return;
+        client.send(message, { binary: isBinary });
+    });
+};
+
+export const sendToSpecifiedClients = (
+    clients: WebSocket[],
+    message: string,
+    isBinary: boolean
+) => {
+    clients.forEach((client) => {
+        if (client.readyState !== WebSocket.OPEN) return;
+        client.send(message, { binary: isBinary });
+    });
 };
