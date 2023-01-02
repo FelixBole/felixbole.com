@@ -1,0 +1,32 @@
+.Checkmark {
+    stroke-width: 3px;
+    stroke: #2cdd67;
+}
+
+.success {
+    animation: success 2s forwards;
+}
+
+.waiting {
+    animation: waiting 2s infinite alternate linear;
+}
+
+@keyframes success {
+    0% {
+        stroke-dasharray: 30;
+    }
+    100% {
+        stroke-dasharray: 177;
+    }
+}
+
+@keyframes waiting {
+    0% {
+        stroke: white;
+        stroke-dasharray: 15;
+    }
+    100% {
+        stroke-dasharray: 30;
+        stroke: rgb(230, 226, 123);
+    }
+}

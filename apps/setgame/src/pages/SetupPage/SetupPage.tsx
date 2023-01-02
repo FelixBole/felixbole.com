@@ -45,12 +45,15 @@ export const SetupPage = (props: SetupPageProps) => {
 			{nameSet ? (
 				<>
 					<div className={Styles.start}>
-						<Button onclick={() => startGame()}>Start a Game</Button>
+						<p>
+							Create a new room, a Room ID will be created that you can then
+							share to friends or foes for them to join.
+						</p>
+						<Button onclick={() => startGame()}>Start a new Game</Button>
 					</div>
-					<hr />
-					<h5>Or</h5>
-					<hr />
+					<p>OR</p>
 					<div className={Styles.join}>
+						<p>Join an existing game with a Room ID</p>
 						<input
 							type="text"
 							placeholder="Room ID"
@@ -63,26 +66,28 @@ export const SetupPage = (props: SetupPageProps) => {
 					</div>
 				</>
 			) : (
-				<>
+				<div className={Styles.namePick}>
 					<h5>Enter a name</h5>
-					<input
-						type="text"
-						placeholder="Pseudo"
-						onChange={(e) => {
-							handleNameChange(e);
-						}}
-						defaultValue={nameInput}
-					/>
-					{nameInput !== "" ? (
-						<Button
-							onclick={() => {
-								setNameSet(true);
+					<div className={Styles.inputContainer}>
+						<input
+							type="text"
+							placeholder="Pseudo"
+							onChange={(e) => {
+								handleNameChange(e);
 							}}
-						>
-							OK
-						</Button>
-					) : null}
-				</>
+							defaultValue={nameInput}
+						/>
+						{nameInput !== "" ? (
+							<Button
+								onclick={() => {
+									setNameSet(true);
+								}}
+							>
+								OK
+							</Button>
+						) : null}
+					</div>
+				</div>
 			)}
 		</div>
 	);

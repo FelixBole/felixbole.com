@@ -1,2 +1,15 @@
 .Button {
+    text-transform: uppercase;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 50px;
+    text-align: center;
+    margin: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+    &:hover {
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    }
 }
