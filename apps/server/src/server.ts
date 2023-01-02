@@ -5,6 +5,8 @@ import cors from "cors";
 import { setupWebSocketServer } from "./websocket";
 import { setupSessionParser } from "./session";
 import { startNewGame } from "./setgame";
+import { setupDB } from "./config/db";
+import { User } from "./models/User";
 
 type AppServer = {
     app: express.Application;
@@ -13,6 +15,9 @@ type AppServer = {
 
 export const startServer = (port = 3040) => {
     const PORT = process.env.PORT || port;
+
+    setupDB();
+
     const app = express();
 
     const { sessionParser, store } = setupSessionParser();
@@ -22,7 +27,50 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    app.post("/login", function (req, res) {
+    app.get("/auth/check", async (req, res) => {
+        if (req.session.userId) {
+            return res
+                .status(200)
+                .json({ success: true, message: "User authenticated" });
+        }
+
+        return res
+            .status(401)
+            .json({ success: false, error: "ERRUSERNOTLOGGEDIN" });
+    });
+
+    app.post("/signup", async (req, res) => {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password)
+            return res
+                .status(400)
+                .json({ error: "missing body information", body: req.body });
+
+        try {
+            await User.createUser(name, email, password);
+        } catch (err) {
+            if (err.message.includes("E11000 duplicate")) {
+                return res.status(400).json({
+                    error: "ERRDUPLICATEEMAIL",
+                    message: "User with this email already exists",
+                });
+            }
+            return res.status(500).json({ error: "failed to create user" });
+        }
+
+        const uuid = crypto.randomUUID();
+        req.session.userId = uuid;
+        req.session.name = name;
+
+        return res.status(201).json({
+            message: "user created",
+            success: true,
+            statusCode: 201,
+            sid: uuid,
+        });
+    });
+
+    app.post("/login", async (req, res) => {
         if (req.session.userId) {
             if (req?.body?.name !== req.session.name) {
                 req.session.name = req.body.name;

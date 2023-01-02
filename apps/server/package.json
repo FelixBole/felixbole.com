@@ -46,13 +46,15 @@
         "typescript": "^4.9.4"
     },
     "dependencies": {
+        "connect-mongo": "^4.6.0",
         "cookie": "^0.5.0",
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
         "express": "^4.18.2",
         "express-session": "^1.17.3",
-        "ws": "^8.11.0",
-        "setgame-fns": "workspace:*"
+        "mongoose": "^6.8.2",
+        "setgame-fns": "workspace:*",
+        "ws": "^8.11.0"
     }
 }

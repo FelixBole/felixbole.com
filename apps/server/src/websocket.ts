@@ -3,7 +3,7 @@ import { IncomingMessage, Server, ServerResponse } from "http";
 import { WebSocket, WebSocketServer } from "ws";
 import cookie from "cookie";
 import cookieParser from "cookie-parser";
-import { MemoryStore } from "express-session";
+import MongoStore from "connect-mongo";
 import { findGameByRoomId } from "./setgame";
 import {
     foundSet,
@@ -30,7 +30,7 @@ const userIDWSMap = new Map<string, WebSocket>();
 
 export const setupWebSocketServer = (
     server: Server<typeof IncomingMessage, typeof ServerResponse>,
-    store: MemoryStore
+    store: MongoStore
 ) => {
     const wss = new WebSocketServer({ clientTracking: false, noServer: true });
 
