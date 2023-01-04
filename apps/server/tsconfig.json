@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
         "rootDir": "src/",
-        "module": "commonjs",
+        "module": "CommonJS",
         "esModuleInterop": true,
-        "target": "es5",
+        "target": "ESNext",
         "noImplicitAny": true,
         "moduleResolution": "node",
         "sourceMap": false,
