@@ -15,7 +15,5 @@ export default defineConfig({
         rollupOptions: {
             external: ['react', 'react-dom'],
         },
-        // assetsDir: path.resolve(__dirname, 'src/assets'),
-        // outDir: 'dist',
     },
 });

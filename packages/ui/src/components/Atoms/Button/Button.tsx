@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import Styles from './Button.module.scss';
+import './Button.module.scss';
 
 type ButtonProps = {
     onclick?: (e: React.MouseEvent | React.TouchEvent) => any;
