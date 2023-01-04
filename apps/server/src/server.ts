@@ -1,4 +1,5 @@
 import express from "express";
+import path from "path";
 import { IncomingMessage, Server, ServerResponse, createServer } from "http";
 import crypto from "crypto";
 import cors from "cors";
@@ -27,7 +28,11 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    app.get("/auth/check", async (req, res) => {
+    app.use(
+        express.static(path.join(__dirname, "..", "..", "setgame", "dist"))
+    );
+
+    app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {
             return res
                 .status(200)
@@ -39,7 +44,7 @@ export const startServer = (port = 3040) => {
             .json({ success: false, error: "ERRUSERNOTLOGGEDIN" });
     });
 
-    app.post("/signup", async (req, res) => {
+    app.post("/api/signup", async (req, res) => {
         const { name, email, password } = req.body;
         if (!name || !email || !password)
             return res
@@ -70,7 +75,7 @@ export const startServer = (port = 3040) => {
         });
     });
 
-    app.post("/login", async (req, res) => {
+    app.post("/api/login", async (req, res) => {
         if (req.session.userId) {
             if (req?.body?.name !== req.session.name) {
                 req.session.name = req.body.name;
@@ -93,7 +98,7 @@ export const startServer = (port = 3040) => {
         });
     });
 
-    app.delete("/logout", function (request, response) {
+    app.delete("/api/logout", function (request, response) {
         const ws = map.get(request.session.userId);
 
         request.session.destroy(function () {
@@ -103,7 +108,7 @@ export const startServer = (port = 3040) => {
         });
     });
 
-    app.get("/set/newgame", async (req, res) => {
+    app.get("/api/set/newgame", async (req, res) => {
         const { newGame, roomId } = startNewGame();
 
         return res.json({ newGame, roomId });
