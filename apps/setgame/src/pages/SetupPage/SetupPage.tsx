@@ -3,20 +3,16 @@ import { Button } from "ui";
 import { serverCall } from "../../utils/serverCall";
 import Styles from "./SetupPage.module.scss";
 import { useNavigate } from "react-router-dom";
+import { useEffectOnce } from "hooks";
 
 type SetupPageProps = {};
 
 export const SetupPage = (props: SetupPageProps) => {
 	const [roomIDInput, setRoomIDInput] = useState<string>("");
-	const [nameInput, setNameInput] = useState<string>("");
-	const [nameSet, setNameSet] = useState<boolean>(false);
+	const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 	const navigate = useNavigate();
 
 	const startGame = async () => {
-		// LOGIN
-		const login = await serverCall.POST("/login", { name: nameInput });
-		sessionStorage.setItem("sid", login.sid);
-
 		// ASK SERVER TO INIT A GAME AND A ROOM ID
 		const gameData = await serverCall.GET("/set/newgame");
 
@@ -25,10 +21,6 @@ export const SetupPage = (props: SetupPageProps) => {
 	};
 
 	const joinGame = async () => {
-		// TMP
-		const login = await serverCall.POST("/login", { name: nameInput });
-		sessionStorage.setItem("sid", login.sid);
-
 		navigate("/game/" + roomIDInput);
 	};
 
@@ -36,14 +28,34 @@ export const SetupPage = (props: SetupPageProps) => {
 		setRoomIDInput(e.currentTarget.value);
 	};
 
-	const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setNameInput(e.currentTarget.value);
+	const logout = async () => {
+		await serverCall.DELETE("/logout");
+		location.reload();
 	};
+
+	useEffectOnce(() => {
+		const checkLogStatus = async () => {
+			const data = await serverCall.GET("/auth/check");
+
+			if (data?.success) {
+				setIsLoggedIn(true);
+			}
+		};
+
+		checkLogStatus();
+	});
 
 	return (
 		<div className={Styles.SetupPage}>
-			{nameSet ? (
+			{isLoggedIn ? (
 				<>
+					<Button
+						onclick={() => {
+							logout();
+						}}
+					>
+						Logout
+					</Button>
 					<div className={Styles.start}>
 						<p>
 							Create a new room, a Room ID will be created that you can then
@@ -67,25 +79,9 @@ export const SetupPage = (props: SetupPageProps) => {
 				</>
 			) : (
 				<div className={Styles.namePick}>
-					<h5>Enter a name</h5>
 					<div className={Styles.inputContainer}>
-						<input
-							type="text"
-							placeholder="Pseudo"
-							onChange={(e) => {
-								handleNameChange(e);
-							}}
-							defaultValue={nameInput}
-						/>
-						{nameInput !== "" ? (
-							<Button
-								onclick={() => {
-									setNameSet(true);
-								}}
-							>
-								OK
-							</Button>
-						) : null}
+						<Button onclick={() => navigate("/login")}>Login</Button>
+						<Button onclick={() => navigate("/signup")}>Create account</Button>
 					</div>
 				</div>
 			)}

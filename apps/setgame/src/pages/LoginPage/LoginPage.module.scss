@@ -1,0 +1,31 @@
+@import "../../shared/styles/background";
+
+.LoginPage {
+	min-height: 100vh;
+	background-image: $bg-image-circle-gradient;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+	.error {
+		background-color: rgb(221, 80, 80);
+		border: 2px solid red;
+		border-radius: 8px;
+		margin: 15px;
+		padding: 15px;
+		color: white;
+	}
+
+	label {
+		padding: 10px 0 5px 0;
+		color: white;
+		font-size: 16px;
+	}
+
+	small {
+		color: white;
+		font-size: 12px;
+		margin-bottom: 15px;
+	}
+}
