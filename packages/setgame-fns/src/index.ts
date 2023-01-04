@@ -8,4 +8,4 @@ export { findPlayer, addPlayer, findPlayerIndex, setPlayerReady, removePlayer, a
 
 export { GameOfSet } from './GameOfSet';
 
-export type { Player, SetGame } from "./@types";
+export type { Player, SetGame } from "./typings";

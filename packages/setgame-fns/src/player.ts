@@ -1,4 +1,4 @@
-import { Player, SetGame } from './@types';
+import { Player, SetGame } from './typings';
 
 export const findPlayer = (players: Player[], uuid: string) => {
     return players.find((p) => p.uuid === uuid);

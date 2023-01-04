@@ -3,8 +3,14 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
 	"scripts": {
-		"format": "turbo run format --parallel"
+		"format": "turbo run format --parallel",
+		"dev": "turbo run dev --parallel",
+		"build": "turbo run build"
 	},
 	"keywords": [],
 	"author": "",

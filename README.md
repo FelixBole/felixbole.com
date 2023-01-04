@@ -67,3 +67,20 @@ pnpm -r --parallel run dev
 Still trying to understand this but it can do some fancy stuff such as not running a command (like format / build / lint etc) on projects that haven't been changed by caching them, making it faster as well as avoiding to change stuff that shouldn't be changed.
 
 This could come in handy during a CI pipeline tests check to run tests only on the modified project.
+
+
+	"turbo": {
+		"pipeline": {
+			"dev": {
+				"cache": false,
+			}
+		},
+		"build": {
+			"dependsOn": [
+				"^build"
+			],
+			"outputs": [
+
+			]
+		}
+	},

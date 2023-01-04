@@ -1,5 +1,5 @@
 import { isSet } from "./isSet";
-import { SetGame } from "./@types";
+import { SetGame } from "./typings";
 
 /**
  * Helper to find possible sets in the current layed out

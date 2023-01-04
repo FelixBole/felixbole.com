@@ -1,4 +1,4 @@
-import { Player } from './@types';
+import { Player } from './typings';
 
 export class GameOfSet {
     deck: string[] = [];

@@ -12,6 +12,5 @@ const Template: StoryFn<typeof GameCard> = (args) => <GameCard {...args} />;
 export const Default = Template.bind({});
 Default.args = {
     id: '1123',
-    onclick: (e, s, id) => console.log({ e, s, id }),
-    selectionColor: '#dfa107',
+    onclick: (e, s, id) => console.log({ e, s, id })
 };

@@ -1,4 +1,4 @@
-import { SetGame } from "./@types";
+import { SetGame } from "./typings";
 import { drawCard } from "./drawCard";
 
 /**

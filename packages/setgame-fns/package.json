@@ -2,9 +2,14 @@
 	"name": "setgame-fns",
 	"private": true,
 	"version": "0.1.0",
-	"main": "src/index.ts",
+	"main": "dist/index.js",
 	"scripts": {
-		"format": "prettier --write ./src"
+		"format": "prettier --write ./src",
+		"build": "tsc && rm -rf dist/typings/"
 	},
-	"prettier": "tools/prettier.config.js"
+	"prettier": "tools/prettier.config.js",
+	"devDependencies": {
+		"typescript": "^4.9.4"
+	},
+	"types": "dist/@types"
 }
