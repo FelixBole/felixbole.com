@@ -17,7 +17,8 @@
 	},
 	"prettier": "tools/prettier.config.js",
 	"devDependencies": {
-		"typescript": "^4.9.4"
+		"typescript": "^4.9.4",
+		"tools": "workspace:*"
 	},
 	"types": "dist/mjs/@types"
 }
