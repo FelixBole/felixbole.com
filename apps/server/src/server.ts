@@ -28,10 +28,8 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    if (process.env.NODE_ENV === "production")
-        app.use(
-            express.static(path.join(__dirname, "..", "..", "front", "dist"))
-        );
+    // Without this, we get a MIME type check error loading js files
+    app.use(express.static(path.join(__dirname, "..", "..", "front", "dist")));
 
     app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {
@@ -128,6 +126,14 @@ export const startServer = (port = 3040) => {
 
         return res.json({ newGame, roomId });
     });
+
+    // Let react handle all routing for client
+    if (process.env.NODE_ENV === "production")
+        app.get("*", async (req, res) => {
+            res.sendFile(
+                path.join(__dirname, "..", "..", "front", "dist", "index.html")
+            );
+        });
 
     const server = createServer(app);
     const { map } = setupWebSocketServer(server, store);
