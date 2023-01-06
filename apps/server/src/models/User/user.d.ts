@@ -4,6 +4,7 @@ import { AllSchemas } from "../models";
 export interface IUser extends AllSchemas {
     name: string;
     password: string;
+    avatar: string[][];
     salt: string;
     stats: {
         wins: {

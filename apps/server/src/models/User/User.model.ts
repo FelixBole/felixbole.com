@@ -17,6 +17,11 @@ export const schema = new Schema<IUser, UserModel, IUserMethods>({
         max: [20, "Password too long !"],
     },
 
+    avatar: {
+        type: [[String]],
+        required: true,
+    },
+
     salt: {
         type: String,
     },

@@ -29,7 +29,10 @@ export const startServer = (port = 3040) => {
     app.use(sessionParser);
 
     // Without this, we get a MIME type check error loading js files
-    app.use(express.static(path.join(__dirname, "..", "..", "front", "dist")));
+    if (process.env.NODE_ENV === "production")
+        app.use(
+            express.static(path.join(__dirname, "..", "..", "front", "dist"))
+        );
 
     app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {

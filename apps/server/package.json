@@ -57,6 +57,7 @@
         "mongodb": "^4.13.0",
         "mongoose": "^6.8.2",
         "setgame-fns": "workspace:*",
-        "ws": "^8.11.0"
+        "ws": "^8.11.0",
+        "svg-pixel-generator": "workspace:*"
     }
 }
