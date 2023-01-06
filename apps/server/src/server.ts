@@ -28,11 +28,10 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production")
         app.use(
-            express.static(path.join(__dirname, "..", "..", "setgame", "dist"))
+            express.static(path.join(__dirname, "..", "..", "front", "dist"))
         );
-    }
 
     app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {
