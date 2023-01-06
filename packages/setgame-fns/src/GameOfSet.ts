@@ -11,6 +11,7 @@ export class GameOfSet {
     lastSet: string[];
     startedAt: number;
     players: Player[];
+    finalScores: number[];
 
     constructor() {
         this.showCount = 12;
@@ -21,6 +22,7 @@ export class GameOfSet {
         this.startedAt = 0;
         this.generateDeck();
         this.generateLayout();
+        this.finalScores = [];
     }
 
     start() {
@@ -235,7 +237,9 @@ export class GameOfSet {
 
     isGameOver() {
         if (this.deck.length !== 0) return false;
-        return this.findSets().length === 0;
+        const isOver = this.findSets().length === 0;
+        if (isOver) this.generateScores();
+        return isOver;
     }
 
     updateShowCount(showCount: number) {
@@ -261,6 +265,27 @@ export class GameOfSet {
         this.updatePossibleSets();
 
         return this;
+    }
+
+    getScore(player: Player) {
+        return Math.floor(
+                player.currentScore * (100 / Math.floor((Date.now() - this.startedAt) / 1000)) * 1000
+            )
+    }
+
+    generateScores() {
+        this.finalScores = this.players.map((p) => {
+            return this.getScore(p);
+        })
+    }
+
+    getPlayerScore(player: Player) {
+        const idx = this.findPlayerIndex(player.uuid);
+        if (idx === -1 || idx > this.finalScores.length - 1) {
+            return this.getScore(player);
+        }
+
+        return this.finalScores[idx];
     }
 
     static isSet(cards: string[]) {

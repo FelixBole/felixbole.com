@@ -18,6 +18,5 @@
         "declaration": true,
     },
     "include": ["src"],
-    "exclude": ["src/**/*.stories.tsx"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

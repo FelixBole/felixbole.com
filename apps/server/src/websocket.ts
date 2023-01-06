@@ -92,7 +92,7 @@ export const setupWebSocketServer = (
 
         userIDWSMap.set(userId, ws);
 
-        ws.on("message", function (rawData, isBinary) {
+        ws.on("message", async function (rawData, isBinary) {
             const data = JSON.parse(rawData.toString());
 
             const game: GameOfSet | null = data.roomId
@@ -100,6 +100,8 @@ export const setupWebSocketServer = (
                 : null;
 
             if (!game) return;
+
+            updateClientList(game);
 
             const callbackParams: SetGameSocketCallbackParams = {
                 clients: game.players.map((p) => userIDWSMap.get(p.uuid)),
@@ -118,7 +120,7 @@ export const setupWebSocketServer = (
                 case "playerExit":
                     return playerExit(callbackParams);
                 case "foundSet":
-                    return foundSet(callbackParams);
+                    return await foundSet(callbackParams);
                 case "showMore":
                     return requestShowMore(callbackParams);
                 case "invalidSet":
@@ -154,6 +156,13 @@ export const setupWebSocketServer = (
     return { wss, map: userIDWSMap } as WebSocketServerSetup;
 };
 
+export const updateClientList = (game: GameOfSet) => {
+    for (const player of game.players) {
+        const ws = userIDWSMap.get(player.uuid);
+        if (!ws) userIDWSMap.delete(player.uuid);
+    }
+};
+
 export const sendToAllClients = (message: string, isBinary: boolean) => {
     userIDWSMap.forEach((client) => {
         if (client.readyState !== WebSocket.OPEN) return;
@@ -167,6 +176,7 @@ export const sendToSpecifiedClients = (
     isBinary: boolean
 ) => {
     clients.forEach((client) => {
+        if (!client) return;
         if (client.readyState !== WebSocket.OPEN) return;
         client.send(message, { binary: isBinary });
     });

@@ -2,7 +2,7 @@ import { Checkmark } from './Checkmark';
 import { Meta, StoryFn } from '@storybook/react';
 
 export default {
-    title: 'Checkmark',
+    title: 'Atoms/SVG/Checkmark',
     component: Checkmark,
     argTypes: {},
 } as Meta<typeof Checkmark>;

@@ -3,10 +3,10 @@ import crypto from "crypto";
 import { IUser } from "./user";
 
 export const hooks = (schema: Schema<IUser>) => {
-    schema.pre("save", function (next) {
+    schema.pre("save", async function (next) {
         if (this.isModified("password")) {
             this.salt = crypto.randomBytes(16).toString("hex");
-            crypto.pbkdf2(
+            await crypto.pbkdf2(
                 this.password,
                 this.salt,
                 1000,
@@ -18,6 +18,8 @@ export const hooks = (schema: Schema<IUser>) => {
                     next();
                 }
             );
+        } else {
+            next();
         }
     });
 };

@@ -12,4 +12,5 @@ const Template: StoryFn<typeof Button> = (args) => <Button {...args} />;
 export const Default = Template.bind({});
 Default.args = {
     children: 'Stay Fresh!',
+    fullWidth: false,
 };

@@ -9,7 +9,6 @@
 	],
 	"scripts": {
 		"format": "turbo run format --parallel",
-		"dev": "turbo run dev --parallel",
 		"build": "turbo run build"
 	},
 	"keywords": [],

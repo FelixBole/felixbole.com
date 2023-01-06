@@ -1,5 +1,6 @@
 export type Player = {
     uuid: string;
+    mongoID?: string;
     wins: number;
     currentScore: number;
     ready: boolean;

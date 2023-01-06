@@ -1,5 +1,6 @@
 import { GameOfSet } from "setgame-fns";
 import WebSocket from "ws";
+import { User } from "./models/User";
 import { restartGame } from "./setgame";
 import { sendToAllClients, sendToSpecifiedClients } from "./websocket";
 
@@ -64,7 +65,7 @@ export const playerExit = ({
     return sendToSpecifiedClients(clients, message, isBinary);
 };
 
-export const foundSet = ({
+export const foundSet = async ({
     clients,
     game,
     uuid,
@@ -83,6 +84,42 @@ export const foundSet = ({
     game.sortPlayersByScore();
 
     const eventName = game.isGameOver() ? "gameOver" : "foundSet";
+
+    if (game.isGameOver()) {
+        const users = await User.find({
+            _id: { $in: game.players.map((p) => p.uuid) },
+        });
+
+        // We sorted so we know the first one is winner
+        const winningPlayer = users[0];
+        const isMultiplayer = game.players.length > 1;
+        if (isMultiplayer) {
+            winningPlayer.stats.wins.multiplayer++;
+            users.forEach((p) => {
+                const player = game.players.find(
+                    (pl) => pl.uuid === p._id.toString()
+                );
+                const score = game.getPlayerScore(player);
+                p.stats.gamesPlayed.multiplayer++;
+                p.stats.highScore.multiplayer =
+                    score > p.stats.highScore.multiplayer
+                        ? score
+                        : p.stats.highScore.multiplayer;
+            });
+        } else {
+            winningPlayer.stats.wins.solo++;
+            winningPlayer.stats.gamesPlayed.solo++;
+
+            const curHiScore = winningPlayer.stats.highScore.solo;
+            const newPotentialHiScore = game.getPlayerScore(game.players[0]);
+            winningPlayer.stats.highScore.solo =
+                newPotentialHiScore > curHiScore
+                    ? newPotentialHiScore
+                    : curHiScore;
+        }
+
+        await Promise.all(users.map((u) => u.save()));
+    }
 
     const message = JSON.stringify({
         eventName: eventName,

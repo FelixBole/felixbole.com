@@ -28,9 +28,11 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    app.use(
-        express.static(path.join(__dirname, "..", "..", "setgame", "dist"))
-    );
+    if (process.env.NODE_ENV === "production") {
+        app.use(
+            express.static(path.join(__dirname, "..", "..", "setgame", "dist"))
+        );
+    }
 
     app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {
@@ -45,19 +47,19 @@ export const startServer = (port = 3040) => {
     });
 
     app.post("/api/signup", async (req, res) => {
-        const { name, email, password } = req.body;
-        if (!name || !email || !password)
+        const { name, password } = req.body;
+        if (!name || !password)
             return res
                 .status(400)
                 .json({ error: "missing body information", body: req.body });
 
         try {
-            await User.createUser(name, email, password);
+            await User.createUser(name, password);
         } catch (err) {
             if (err.message.includes("E11000 duplicate")) {
                 return res.status(400).json({
-                    error: "ERRDUPLICATEEMAIL",
-                    message: "User with this email already exists",
+                    error: "ERRDUPLICATENAME",
+                    message: "User with this name already exists",
                 });
             }
             return res.status(500).json({ error: "failed to create user" });
@@ -84,15 +86,29 @@ export const startServer = (port = 3040) => {
             return res.json({
                 message: "Already connected ",
                 sid: req.session.userId,
+                success: true,
             });
         }
 
-        const id = crypto.randomUUID();
+        const user = await User.findOne({ name: req.body.name });
+        if (!user)
+            return res
+                .status(404)
+                .json({ error: "ERRINVALIUSRNAME", message: "user not found" });
 
-        req.session.userId = id;
-        req.session.name = req.body.name || "";
+        const pwValid = await user.isPasswordValid(req.body.password);
+        if (!pwValid) {
+            return res.status(400).json({
+                error: "ERRINVALIDPASSWORD",
+                message: "invalid password",
+            });
+        }
+
+        req.session.userId = user._id.toString();
+        req.session.name = user.name;
         res.json({
             result: "OK",
+            success: true,
             message: "Session updated",
             sid: req.session.userId,
         });

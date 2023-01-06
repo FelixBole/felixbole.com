@@ -3,7 +3,6 @@ import { AllSchemas } from "../models";
 
 export interface IUser extends AllSchemas {
     name: string;
-    email: string;
     password: string;
     salt: string;
     stats: {
@@ -29,7 +28,6 @@ export interface IUserMethods {
 export interface UserModel extends Model<IUser, object, IUserMethods> {
     createUser(
         name: string,
-        email: string,
         password: string
     ): Promise<HydratedDocument<IUser, IUserMethods>>;
 }

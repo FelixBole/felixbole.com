@@ -1,0 +1,29 @@
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.Input {
+    padding: 5px;
+    margin: 15px 5px;
+    border-radius: 2px;
+    border: 2px solid transparent;
+    transition: all .2s ease-in;
+
+    &:focus {
+        --angle: 0deg;
+
+        outline: none;
+        border: 2px solid;
+        border-radius: 8px;
+        border-image: linear-gradient(var(--angle), gold, rgb(182, 133, 10), rgb(75, 218, 32)) 1;
+        background-color: rgb(44, 38, 38);
+        color: white;
+        animation: rotate 10s linear infinite;
+    }
+}
+
+@keyframes rotate {
+    to { --angle: 360deg }
+}

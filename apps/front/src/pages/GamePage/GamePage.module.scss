@@ -1,0 +1,57 @@
+@import "../../shared/styles/background";
+
+.GamePage {
+	background-image: $bg-image-circle-gradient;
+	min-height: 100vh;
+}
+
+.Waiting {
+	min-height: 98vh;
+
+	.header {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		padding: 20px;
+	}
+
+	.players {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		padding: 20px;
+		border-radius: 8px;
+		background: rgba(32, 30, 30, .3);
+
+		h5 {
+			font-size: 18px;
+			padding: 10px;
+			color: white;
+			text-transform: uppercase;
+		}
+
+		ul {
+			list-style-type: none;
+
+			li {
+				padding: 10px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				svg {
+					height: 30px;
+				}
+			}
+		}
+	}
+
+	.buttons {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 20px;
+	}
+}

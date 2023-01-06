@@ -14,6 +14,7 @@ type GameCardProps = {
     animationDelay?: number;
 
     tiny?: boolean;
+    clickable?: boolean;
 };
 
 export const GameCard = ({
@@ -23,6 +24,7 @@ export const GameCard = ({
     clicked = false,
     animationDelay = 0,
     tiny = false,
+    clickable = true,
 }: GameCardProps) => {
     const [selected, setSelected] = useState<boolean>(clicked);
 
@@ -43,6 +45,7 @@ export const GameCard = ({
             id={`gamecard-${id}`}
             className={`${Styles.GameCard} ${highlighted ? Styles.highlighted : ''} ${tiny ? Styles.tiny : ''}`}
             onClick={(e) => handleClick(e)}
+            style={{ pointerEvents: clickable ? undefined : 'none' }}
         >
             <div
                 className={`${Styles.inner} ${!tiny ? Styles.innerAnimated : ''}`}

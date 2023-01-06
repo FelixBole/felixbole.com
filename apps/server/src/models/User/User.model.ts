@@ -5,15 +5,9 @@ export const schema = new Schema<IUser, UserModel, IUserMethods>({
     name: {
         type: String,
         required: true,
+        unique: true,
         min: [2, "Name too short !"],
         max: [30, "Name too long !"],
-    },
-
-    email: {
-        type: String,
-        required: true,
-        min: [5, "Invalid email length !"],
-        unique: true,
     },
 
     password: {
@@ -63,5 +57,5 @@ export const schema = new Schema<IUser, UserModel, IUserMethods>({
         },
     },
 
-    schema_version: { type: String, default: "1" },
+    schema_version: { type: String, default: "2" },
 });
