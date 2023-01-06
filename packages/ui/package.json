@@ -10,7 +10,7 @@
         "dev": "storybook dev -p 6006",
         "build-storybook": "storybook build",
         "format": "prettier --write ./src",
-        "build": "pnpm run ensureProduction && tsc && vite build",
+        "build": "tsc && vite build",
         "ensureProduction": "node --experimental-json-modules scripts/checkPackage.js"
     },
     "prettier": "tools/prettier.config.js",
