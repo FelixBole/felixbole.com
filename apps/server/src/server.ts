@@ -28,17 +28,16 @@ export const startServer = (port = 3040) => {
     app.use(express.json());
     app.use(sessionParser);
 
-    // Without this, we get a MIME type check error loading js files
-    if (process.env.NODE_ENV === "production")
-        app.use(
-            express.static(path.join(__dirname, "..", "..", "front", "dist"))
-        );
-
     app.get("/api/auth/check", async (req, res) => {
         if (req.session.userId) {
-            return res
-                .status(200)
-                .json({ success: true, message: "User authenticated" });
+            const user = await User.findById(req.session.userId);
+            if (!user)
+                return res.status(404).json({ error: "ERRUSERNOTFOUND" });
+            return res.status(200).json({
+                success: true,
+                message: "User authenticated",
+                data: { user: user.publicSchema() },
+            });
         }
 
         return res
@@ -53,8 +52,10 @@ export const startServer = (port = 3040) => {
                 .status(400)
                 .json({ error: "missing body information", body: req.body });
 
+        let user;
+
         try {
-            await User.createUser(name, password);
+            user = await User.createUser(name, password);
         } catch (err) {
             if (err.message.includes("E11000 duplicate")) {
                 return res.status(400).json({
@@ -65,36 +66,24 @@ export const startServer = (port = 3040) => {
             return res.status(500).json({ error: "failed to create user" });
         }
 
-        const uuid = crypto.randomUUID();
-        req.session.userId = uuid;
+        req.session.userId = user._id.toString();
+        req.session.avatar = user.avatar;
         req.session.name = name;
 
         return res.status(201).json({
             message: "user created",
             success: true,
             statusCode: 201,
-            sid: uuid,
+            user: user.publicSchema(),
         });
     });
 
     app.post("/api/login", async (req, res) => {
-        if (req.session.userId) {
-            if (req?.body?.name !== req.session.name) {
-                req.session.name = req.body.name;
-            }
-
-            return res.json({
-                message: "Already connected ",
-                sid: req.session.userId,
-                success: true,
-            });
-        }
-
         const user = await User.findOne({ name: req.body.name });
         if (!user)
             return res
                 .status(404)
-                .json({ error: "ERRINVALIUSRNAME", message: "user not found" });
+                .json({ error: "ERRUSERNOTFOUND", message: "user not found" });
 
         const pwValid = await user.isPasswordValid(req.body.password);
         if (!pwValid) {
@@ -105,22 +94,23 @@ export const startServer = (port = 3040) => {
         }
 
         req.session.userId = user._id.toString();
+        req.session.avatar = user.avatar;
         req.session.name = user.name;
         res.json({
-            result: "OK",
             success: true,
             message: "Session updated",
             sid: req.session.userId,
+            user: user.publicSchema(),
         });
     });
 
-    app.delete("/api/logout", function (request, response) {
-        const ws = map.get(request.session.userId);
+    app.delete("/api/logout", async (req, res) => {
+        const ws = map.get(req.session.userId);
 
-        request.session.destroy(function () {
+        req.session.destroy(function () {
             if (ws) ws.close();
 
-            response.send({ result: "OK", message: "Session destroyed" });
+            res.json({ result: "OK", message: "Session destroyed" });
         });
     });
 
@@ -130,13 +120,19 @@ export const startServer = (port = 3040) => {
         return res.json({ newGame, roomId });
     });
 
-    // Let react handle all routing for client
-    if (process.env.NODE_ENV === "production")
+    if (process.env.NODE_ENV === "production") {
+        // Without this, we get a MIME type check error loading js files
+        app.use(
+            express.static(path.join(__dirname, "..", "..", "front", "dist"))
+        );
+
+        // Let react handle all routing for client
         app.get("*", async (req, res) => {
             res.sendFile(
                 path.join(__dirname, "..", "..", "front", "dist", "index.html")
             );
         });
+    }
 
     const server = createServer(app);
     const { map } = setupWebSocketServer(server, store);

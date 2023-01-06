@@ -6,6 +6,8 @@ type Props = {
 };
 
 export const SVGAvatar = ({ avatar, pxSize = 100, className }: Props) => {
+    if (!avatar) return null;
+
     const styles: React.CSSProperties = {
         width: pxSize,
         height: pxSize,

@@ -1,11 +1,11 @@
 export type Player = {
     uuid: string;
     mongoID?: string;
-    wins: number;
     currentScore: number;
     ready: boolean;
     requestShowMore: boolean;
     name: string;
+    avatar?: string[][];
 };
 
 export type SetGame = {

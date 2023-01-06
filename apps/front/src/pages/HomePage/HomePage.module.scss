@@ -109,7 +109,7 @@ $white: #ececec;
                 }
 
                 span {
-                    background: linear-gradient(to left, rgba(0, 0, 0, 0.747), transparent);
+                    background: linear-gradient(to left, rgba(0, 0, 0, 0.747) 10%, transparent 75%);
                     position: absolute;
                     left: 0;
                     width: 100%;

@@ -1,0 +1,10 @@
+@import '../../shared/styles/background';
+
+.LoaderPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    max-height: 100vh;
+    background-image: $bg-image-circle-gradient;
+}

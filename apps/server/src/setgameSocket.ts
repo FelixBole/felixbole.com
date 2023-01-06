@@ -11,13 +11,14 @@ export interface SetGameSocketCallbackParams {
     roomId: string;
     isBinary: boolean;
     selection?: string[];
+    avatar?: string[][];
 }
 
 export const playerJoined = (
-    { game, uuid, roomId, isBinary }: SetGameSocketCallbackParams,
+    { game, uuid, roomId, isBinary, avatar }: SetGameSocketCallbackParams,
     name: string
 ) => {
-    if (!game.addPlayer(uuid, name)) return;
+    if (!game.addPlayer(uuid, name, avatar)) return;
 
     const message = JSON.stringify({
         eventName: "playerJoined",

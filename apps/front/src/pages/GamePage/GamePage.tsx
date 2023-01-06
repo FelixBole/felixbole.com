@@ -1,11 +1,14 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import Styles from './GamePage.module.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GameGrid } from '../../components/GameGrid/GameGrid';
 import { CONFIG } from '../../config';
 import { Button, Checkmark } from 'ui';
-import { Player, SetGame } from 'setgame-fns';
-import { useEffectOnce, useWebSocket } from 'hooks';
+import { GameOfSet, Player, SetGame } from 'setgame-fns';
+import { useWebSocket } from 'hooks';
+import { SVGAvatar } from 'svg-pixel-generator';
+import { getUserAvatar } from '../../utils/getUserSessionInfo';
+import { GameSetInfo } from '../../components/Games/Set/GameSetInfo/GameSetInfo';
 
 type GamePageProps = {};
 
@@ -16,7 +19,7 @@ interface WebSocketResponse {
 }
 
 interface WebSocketGameResponse extends WebSocketResponse {
-    game: SetGame;
+    game: GameOfSet;
     selection?: string[];
 }
 
@@ -26,7 +29,7 @@ export const GamePage = (props: GamePageProps) => {
     const [selectedCards, setSelectedCards] = useState<string[]>([]);
     const [joined, setJoined] = useState(false);
     const [currentPlayers, setCurrentPlayers] = useState<Player[]>([]);
-    const [gameData, setGameData] = useState<SetGame | null>(null);
+    const [gameData, setGameData] = useState<GameOfSet | null>(null);
     const navigate = useNavigate();
 
     // Websocket callbacks
@@ -143,6 +146,7 @@ export const GamePage = (props: GamePageProps) => {
                 <>
                     <Button onclick={() => navigate('/games')}>Home</Button>
                     <GameGrid gameData={gameData} ws={ws} roomId={roomId || ''} selectedCards={selectedCards} />
+                    <GameSetInfo game={gameData} />
                 </>
             ) : (
                 <div className={Styles.Waiting}>
@@ -165,11 +169,16 @@ export const GamePage = (props: GamePageProps) => {
                         <ul>
                             {currentPlayers.map((p: any) => (
                                 <li key={p.uuid}>
+                                    <SVGAvatar avatar={p.avatar} pxSize={40}/>
                                     {p.name} : {p.ready ? 'Ready' : 'Preparing'} - <Checkmark success={p.ready} />
                                 </li>
                             ))}
                         </ul>
                     </div>
+                    <p>
+                        The game will start as soon as all players hit READY. If you want to play solo, just hit Ready
+                        now and get going.
+                    </p>
                     <div className={Styles.buttons}>
                         {!joined ? <Button onclick={() => join()}>Join</Button> : null}
                         {joined && !findMe(currentPlayers)?.ready ? (

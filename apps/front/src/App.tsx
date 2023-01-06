@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NavbarHandler } from './components/NavbarHandler/NavbarHandler';
 import { ResolutionHandler } from './components/ResolutionHandler/ResolutionHandler';
-import { GamePage } from './pages/GamePage/GamePage';
-import { GamesPage } from './pages/GamesPage/GamesPage';
 import { HomePage } from './pages/HomePage/HomePage';
+import { LoaderPage } from './pages/LoaderPage/LoaderPage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
-import { SetupPage } from './pages/SetupPage/SetupPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
+import { GamesRouter } from './routers/GamesRouter';
 
 function App() {
     return (
@@ -15,15 +14,15 @@ function App() {
 			<ResolutionHandler>
 				<Routes>
 					<Route path="/" element={<HomePage />} />
-					<Route path="/games" element={<GamesPage />} />
-					<Route path="/games/set" element={<SetupPage />} />
-					<Route path="/games/set/:roomId" element={<GamePage />} />
+					<Route path="/games/*" element={<GamesRouter />} />
 
 					<Route path="/music" element={<>Coming soon</>} />
 					<Route path="/projects" element={<>Coming soon</>} />
 
 					<Route path="/signup" element={<SignupPage />} />
 					<Route path="/login" element={<LoginPage />} />
+
+					<Route path="/loader" element={<LoaderPage />} />
 				</Routes>
 			</ResolutionHandler>
         </Router>

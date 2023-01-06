@@ -5,6 +5,7 @@
     border-left: 2px outset white;
     height: 100vh;
     background: #1b1c1d;
+    z-index: 100;
 
     @media (min-width: 600px) {
         top: 0;

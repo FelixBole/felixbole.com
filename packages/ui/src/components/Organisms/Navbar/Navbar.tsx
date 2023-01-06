@@ -16,7 +16,6 @@ export const Navbar = ({ bg = 'black', navItems }: NavbarProps) => {
         callback: ((e: React.MouseEvent<Element, MouseEvent> | React.TouchEvent<Element>) => any) | undefined,
     ) => {
         setSelected(keyIdx);
-        console.log('setting selected ' + keyIdx);
 
         if (callback) await callback(e);
     };

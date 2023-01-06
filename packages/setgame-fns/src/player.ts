@@ -13,7 +13,6 @@ export const addPlayer = (game: SetGame, uuid: string, name: string) => {
         game.players.push({
             uuid,
             currentScore: 0,
-            wins: 0,
             ready: false,
             requestShowMore: false,
             name,

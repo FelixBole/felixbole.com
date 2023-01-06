@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from 'ui';
+import { Loader } from '../../components/Loader/Loader';
 import { serverCall } from '../../utils/serverCall';
 import Styles from './SignupPage.module.scss';
 
@@ -82,7 +83,7 @@ export const SignupPage = (props: SignupPageProps) => {
                 </>
             ) : (
                 <div>
-                    <h3>Please wait</h3>
+                    <Loader />
                 </div>
             )}
         </div>

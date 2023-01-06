@@ -83,6 +83,7 @@ export const setupWebSocketServer = (
         const req = request as Request;
         const userId = req?.session?.userId;
         const name = req?.session?.name;
+        const avatar = req?.session?.avatar;
 
         if (!userId) return;
 
@@ -110,11 +111,12 @@ export const setupWebSocketServer = (
                 isBinary,
                 roomId: data.roomId,
                 selection: data.selection || [],
+                avatar,
             };
 
             switch (data.eventName) {
                 case "playerJoined":
-                    return playerJoined(callbackParams, name);
+                    return await playerJoined(callbackParams, name);
                 case "playerReady":
                     return playerReady(callbackParams);
                 case "playerExit":

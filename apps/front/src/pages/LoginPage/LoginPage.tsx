@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Input } from "ui";
+import { Loader } from "../../components/Loader/Loader";
 import { serverCall } from "../../utils/serverCall";
 import Styles from "./LoginPage.module.scss";
 
@@ -32,8 +33,20 @@ export const LoginPage = (props: LoginPageProps) => {
 
 		setLoading(false);
 
+		if (data.error) {
+			if (data.error === "ERRUSERNOTFOUND") {
+				setError({message: "This account does not seem to exist"});
+				return;
+			}
+
+			if (data.error === "ERRINVALIDPASSWORD") {
+				setError({message: "Invalid password"});
+				return;
+			}
+		}
+
 		if (data.success) {
-			navigate("/games/set");
+			navigate("/games");
 		}
 	};
 
@@ -52,10 +65,11 @@ export const LoginPage = (props: LoginPageProps) => {
 					<Input type="password" name="password" placeholder="password" defaultValue={password} onchange={(e) => handlePasswordChange(e)} />
 					<small>8 to 20 characters</small>
 					<Button onclick={() => submit()}>Login</Button>
+					<Button onclick={() => navigate('/signup')}>I don't have an account yet</Button>
 				</>
 			) : (
 				<div>
-					<h3>Please wait</h3>
+					<Loader />
 				</div>
 			)}
 		</div>

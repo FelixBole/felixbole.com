@@ -1,7 +1,9 @@
 import { useEffectOnce } from 'hooks';
 import React, { useEffect, useState } from 'react';
-import { isGameOver, isSet, SetGame } from 'setgame-fns';
+import { GameOfSet, isGameOver, isSet } from 'setgame-fns';
+import { SVGAvatar } from 'svg-pixel-generator';
 import { Button, GameCard } from 'ui';
+import { getParameterByName } from '../../utils/getParameterByName';
 import Styles from './GameGrid.module.scss';
 
 interface WebSocketRef {
@@ -9,27 +11,15 @@ interface WebSocketRef {
 }
 
 type Props = {
-    gameData: SetGame | null;
+    gameData: GameOfSet | null;
     ws: WebSocketRef;
     roomId: string;
     selectedCards: string[];
 };
 
-function getParameterByName(name: string, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
 export const GameGrid = ({ gameData = null, ws, roomId }: Props) => {
     const [selection, setSelection] = useState<string[]>([]);
     const [showSet, setShowSet] = useState<boolean>(false);
-    const [timer, setTimer] = useState<number>(
-        gameData?.startedAt ? Math.floor((Date.now() - gameData?.startedAt) / 1000) : 0,
-    );
 
     const isAdmin = getParameterByName('admin') === 'true';
 
@@ -128,17 +118,6 @@ export const GameGrid = ({ gameData = null, ws, roomId }: Props) => {
         };
     }, [ws]);
 
-    // INIT
-    useEffectOnce(() => {
-        const interval = setInterval(() => {
-            setTimer((timer) => timer + 1);
-        }, 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
-    });
-
     const getWidth = (showCount: number | undefined) => {
         switch (showCount) {
             case 12:
@@ -167,17 +146,24 @@ export const GameGrid = ({ gameData = null, ws, roomId }: Props) => {
                         />
                     ))
                 ) : (
-                    <>
-                        <h3>Score</h3>
-                        <ol>
-                            {gameData !== null &&
-                                gameData?.players.map((p) => (
-                                    <li>
-                                        {p.name} - {p.currentScore} sets
-                                    </li>
-                                ))}
-                        </ol>
-                    </>
+                    <div className={Styles.results}>
+                        <h3>Results</h3>
+                        <div className={Styles.players}>
+                            {gameData?.players.map((p, idx) => (
+                                <div key={p.name} className={Styles.player}>
+                                    <div className={Styles.header}>
+                                        <span>{idx + 1}</span>
+                                        <SVGAvatar avatar={p.avatar || [[]]} pxSize={35} />
+                                        <h6>{p.name}</h6>
+                                    </div>
+                                    <div className={Styles.foundSets}>
+                                        <p>Score</p>
+                                        <div>{p.currentScore}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
             <div className={Styles.Sidebar}>
@@ -202,39 +188,8 @@ export const GameGrid = ({ gameData = null, ws, roomId }: Props) => {
                                 <div>Showing: {gameData?.showCount}</div>
                             </>
                         )}
-                        <div>Time: {timer}</div>
                     </>
                 )}
-
-                <div className={Styles.lastSet}>
-                    <h3>Last set: </h3>
-                    {gameData !== null
-                        ? gameData?.lastSet.map((id) => (
-                              <GameCard
-                                  id={id}
-                                  key={`gamecard-${id}`}
-                                  clicked={selection.includes(id)}
-                                  tiny={true}
-                                  clickable={false}
-                              />
-                          ))
-                        : null}
-                </div>
-                <h5>Players:</h5>
-                <div>
-                    {gameData?.players.map((p, idx) => (
-                        <p key={p.uuid}>
-                            <h5
-                                style={{
-                                    color: playerHighlight(p.uuid),
-                                }}
-                            >
-                                {p.name}: {p.currentScore}
-                            </h5>
-                            <small>{p.requestShowMore ? 'Requested Show More' : null}</small>
-                        </p>
-                    ))}
-                </div>
             </div>
         </div>
     );

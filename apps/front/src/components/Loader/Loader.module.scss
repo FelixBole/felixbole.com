@@ -1,0 +1,16 @@
+.Loader {
+    svg {
+        height: 200px;
+        width: 200px;
+    }
+
+    path {
+        animation: anim 2s ease infinite alternate;
+    }
+}
+
+@keyframes anim {
+    to {
+        stroke-dashoffset: 0;
+    }
+}

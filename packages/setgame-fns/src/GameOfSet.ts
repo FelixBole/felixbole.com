@@ -164,15 +164,15 @@ export class GameOfSet {
         return this.players.findIndex((p) => p.uuid === id);
     }
 
-    addPlayer(id: string, name: string) {
+    addPlayer(id: string, name: string, avatar: string[][]) {
         if (!this.findPlayer(id)) {
             this.players.push({
                 uuid: id,
                 currentScore: 0,
-                wins: 0,
                 ready: false,
                 requestShowMore: false,
                 name,
+                avatar,
             });
 
             return true;
@@ -209,7 +209,6 @@ export class GameOfSet {
 
     setPlayerWin() {
         this.sortPlayersByScore();
-        this.players[0].wins++;
         return this;
     }
 

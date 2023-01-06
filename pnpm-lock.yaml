@@ -21,6 +21,7 @@ importers:
       react-dom: ^18.2.0
       react-router-dom: ^6.6.1
       setgame-fns: workspace:*
+      svg-pixel-generator: workspace:*
       tools: workspace:*
       typescript: ^4.9.3
       ui: workspace:*
@@ -33,6 +34,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-router-dom: 6.6.1_biqbaboplfbrettd7655fr4n2y
       setgame-fns: link:../../packages/setgame-fns
+      svg-pixel-generator: link:../../packages/svg-pixel-generator
       ui: link:../../packages/ui
     devDependencies:
       '@types/react': 18.0.26
@@ -81,6 +83,7 @@ importers:
       rimraf: ^3.0.2
       setgame-fns: workspace:*
       supertest: ^6.3.3
+      svg-pixel-generator: workspace:*
       ts-mocha: ^10.0.0
       ts-node: ^10.9.1
       typescript: ^4.9.4
@@ -96,6 +99,7 @@ importers:
       mongodb: 4.13.0
       mongoose: 6.8.2
       setgame-fns: link:../../packages/setgame-fns
+      svg-pixel-generator: link:../../packages/svg-pixel-generator
       ws: 8.11.0
     devDependencies:
       '@types/chai': 4.3.4
@@ -150,8 +154,22 @@ importers:
 
   packages/setgame-fns:
     specifiers:
+      tools: workspace:*
       typescript: ^4.9.4
     devDependencies:
+      tools: link:../tools
+      typescript: 4.9.4
+
+  packages/svg-pixel-generator:
+    specifiers:
+      '@types/react': ^18.0.26
+      react: ^18.2.0
+      tools: workspace:*
+      typescript: ^4.9.4
+    devDependencies:
+      '@types/react': 18.0.26
+      react: 18.2.0
+      tools: link:../tools
       typescript: 4.9.4
 
   packages/tools:
@@ -2978,7 +2996,7 @@ packages:
       '@storybook/components': 7.0.0-beta.12_biqbaboplfbrettd7655fr4n2y
       '@storybook/csf-plugin': 7.0.0-beta.12
       '@storybook/csf-tools': 7.0.0-beta.12
-      '@storybook/mdx2-csf': 1.0.0-next.3
+      '@storybook/mdx2-csf': 1.0.0-next.4
       '@storybook/node-logger': 7.0.0-beta.12
       '@storybook/postinstall': 7.0.0-beta.12
       '@storybook/preview-api': 7.0.0-beta.12
@@ -3307,7 +3325,7 @@ packages:
       '@storybook/client-logger': 7.0.0-beta.12
       '@storybook/core-common': 7.0.0-beta.12
       '@storybook/csf-plugin': 7.0.0-beta.12
-      '@storybook/mdx2-csf': 1.0.0-next.3
+      '@storybook/mdx2-csf': 1.0.0-next.4
       '@storybook/node-logger': 7.0.0-beta.12
       '@storybook/preview': 7.0.0-beta.12
       '@storybook/preview-api': 7.0.0-beta.12
@@ -3657,8 +3675,8 @@ packages:
     resolution: {integrity: sha512-ZKQ8liot//OcThnfBUkeGNtLzTCMZdAvHKJKPJRGppAzjPopWt8cE1NyQYum+IoigGlLvGmXMg9mYFYv57WzVg==}
     dev: true
 
-  /@storybook/mdx2-csf/1.0.0-next.3:
-    resolution: {integrity: sha512-obodj5cDa943eAPNmawzwviiaheWLvI39/o36O+fwkW8jxxXgyEMgad0mLTiwKjlvitLVoHa4Znm5aIN6TW08A==}
+  /@storybook/mdx2-csf/1.0.0-next.4:
+    resolution: {integrity: sha512-nvRgYdpYvXsvSgCzKc4LQA1JxtJzmv47IsFAsh1rTz5FoHyK8watLU2WqX9T4w52fpFXBHx7RwGEsCRt0XgZlQ==}
     dev: true
 
   /@storybook/node-logger/7.0.0-beta.12:

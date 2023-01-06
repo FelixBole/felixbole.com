@@ -18,4 +18,13 @@ export const methods = (schema: Schema<IUser>) => {
             );
         });
     };
+
+    schema.methods.publicSchema = function () {
+        return {
+            _id: this._id,
+            name: this.name,
+            avatar: this.avatar,
+            stats: this.stats,
+        };
+    };
 };
