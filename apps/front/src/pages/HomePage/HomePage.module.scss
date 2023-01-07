@@ -6,6 +6,8 @@ $white: #ececec;
     color: $white;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     .socials {
         padding: 20px 0;
@@ -28,11 +30,11 @@ $white: #ececec;
         }
 
         a:nth-child(1):hover i {
-                color: gray;
+            color: gray;
         }
 
         a:nth-child(2):hover i {
-                color: #ff0000;
+            color: #ff0000;
         }
 
         a:nth-child(3):hover i {
@@ -42,7 +44,6 @@ $white: #ececec;
         a:nth-child(4):hover i {
             color: #629aa9;
         }
-
     }
 
     .socialsDesktop {
@@ -54,18 +55,6 @@ $white: #ececec;
     .socialsMobile {
         @media (min-width: 600px) {
             display: none;
-        }
-    }
-
-    @media (max-width: 600px) {
-        header {
-            .main {
-                flex-direction: column;
-
-                .presentation {
-                    padding-bottom: 20px;
-                }
-            }
         }
     }
 
@@ -169,6 +158,12 @@ $white: #ececec;
         min-height: 100vh;
         padding: 5% 10%;
         scroll-snap-type: y mandatory;
+        width: 100%;
+
+        .sectionContent {
+            max-width: 1100px;
+            margin: auto;
+        }
 
         p {
             padding: 10px 0;
@@ -192,6 +187,18 @@ $white: #ececec;
 
         h3 {
             padding: 20px 0;
+        }
+    }
+}
+
+@media (max-width: 600px) {
+    header {
+        .main {
+            flex-direction: column;
+
+            .presentation {
+                padding-bottom: 20px;
+            }
         }
     }
 }
