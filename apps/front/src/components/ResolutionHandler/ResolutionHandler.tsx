@@ -24,5 +24,5 @@ export const ResolutionHandler = ({ children }: PropsWithChildren<Props>) => {
         };
     });
 
-    return <div style={{ padding: isMobile ? '0 0 60px 0' : '0 80px 0 0' }}>{children}</div>;
+    return <div>{children}</div>;
 };

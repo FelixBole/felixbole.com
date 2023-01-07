@@ -9,7 +9,9 @@
 	],
 	"scripts": {
 		"format": "turbo run format --parallel",
-		"build": "turbo run build"
+		"build": "turbo run build",
+		"dev:server": "pnpm --filter server dev",
+		"dev:front": "pnpm --filter front dev"
 	},
 	"keywords": [],
 	"author": "",

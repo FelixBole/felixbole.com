@@ -11,6 +11,7 @@ export type NavItemProps = {
     stroke?: string;
     color?: string;
     selected?: boolean;
+    className?: string;
     onclick?: (e: React.MouseEvent | React.TouchEvent) => any;
 };
 
@@ -20,6 +21,7 @@ export const NavItem = ({
     stroke = 'white',
     color = 'white',
     textPosition = 'BOTTOM',
+    className = undefined,
     selected = false,
     onclick = () => {},
     children,
@@ -32,7 +34,7 @@ export const NavItem = ({
     // if (selected) return <></>;
 
     return (
-        <div className={Styles.NavItem} onClick={(e) => handleClick(e)}>
+        <div className={`${Styles.NavItem} ${className}`} onClick={(e) => handleClick(e)}>
             {textPosition === 'TOP' && <span style={{ color }}>{children}</span>}
             {icon && getSVG(icon) ? (
                 <svg
