@@ -1,2 +1,146 @@
+@import '../../shared/styles/background';
+@import '../../shared/styles/shadows';
+@import '../../shared/styles/colors';
+
 .ProjectsPage {
+    background: $black;
+    min-height: 100vh;
+    color: white;
+
+    header {
+        padding: 5%;
+    }
+
+    section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .projectsContainer {
+        background-image: url('../../assets/img/bg-fb-projects.png');
+        background-size: contain;
+        object-fit: contain;
+        background-repeat: no-repeat;
+        padding: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        max-height: 500px;
+        max-width: 700px;
+        width: 700px;
+        aspect-ratio: 7 / 4;
+
+        .projects {
+            padding: 15px 15px 15px 40px;
+
+            h5 {
+                font-size: 25px;
+                padding: 20px 0 0 0;
+
+                a {
+                    text-decoration: none;
+                    color: white;
+
+                    i {
+                        transition: color .1s ease;
+                        font-size: 18px;
+                        margin-left: 10px;
+                        &:hover {
+                            color: gray;
+                        }
+                    }
+                }
+            }
+
+            p {
+                padding: 20px 0;
+            }
+        }
+
+        .controls {
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+
+            padding: 15px;
+
+            background: rgba(32, 32, 30, .2);
+            height: 100%;
+
+            span {
+                padding: 15px 0;
+                text-transform: uppercase;
+                text-align: left;
+                cursor: pointer;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 800px) {
+    .ProjectsPage {
+        padding: 15px;
+
+        .projectsContainer {
+            position: relative;
+            margin: 15px 0;
+            width: 100%;
+            height: 500px;
+
+            background-image: unset;
+
+                        flex-direction: column;
+
+            .controls {
+                order: 1;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-evenly;
+                background: none;
+                padding: 10px;
+                flex-wrap: wrap;
+                color: $black;
+
+                span {
+                    margin: 20px 10px;
+                    padding: 10px;
+                    background-color: $white;
+                    border-radius: 50px;
+                }
+            }
+
+            .projects {
+                order: 2;
+            }
+        }
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 1s ease-out forwards;
+    -webkit-animation: fadeIn 1s ease-out forwards;
+}
+
+.fadeOut {
+    animation: fadeOut 1s ease-out forwards;
+    -webkit-animation: fadeOut 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        transform: translateY(15px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }

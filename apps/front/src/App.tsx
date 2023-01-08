@@ -7,7 +7,9 @@ import { HomePage } from './pages/HomePage/HomePage';
 import { LoaderPage } from './pages/LoaderPage/LoaderPage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { MusicPage } from './pages/MusicPage/MusicPage';
+import { ProjectsPage } from './pages/ProjectsPage/ProjectsPage';
 import { SignupPage } from './pages/SignupPage/SignupPage';
+import { TransitionPage } from './pages/TransitionPage/TransitionPage';
 import { GamesRouter } from './routers/GamesRouter';
 
 function App() {
@@ -21,12 +23,13 @@ function App() {
                     <Route path="/games/web/*" element={<GamesRouter />} />
 
                     <Route path="/music" element={<MusicPage />} />
-                    <Route path="/projects" element={<ComingSoonPage />} />
+                    <Route path="/projects" element={<ProjectsPage />} />
 
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/login" element={<LoginPage />} />
 
                     <Route path="/loader" element={<LoaderPage />} />
+                    <Route path="/transition" element={<TransitionPage />} />
                 </Routes>
             </ResolutionHandler>
         </Router>
