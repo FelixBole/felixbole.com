@@ -43,7 +43,9 @@ export const SignupPage = (props: SignupPageProps) => {
         setLoading(false);
 
         if (data.success) {
-            navigate('/games');
+            const callbackUrl = sessionStorage.getItem('callbackURL') || '/games/web';
+            sessionStorage.removeItem('callbackURL');
+            navigate(callbackUrl);
         }
     };
 

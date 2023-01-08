@@ -11,15 +11,20 @@ export const NavbarHandler = () => {
         setActive(!active);
     };
 
+    const handleNavigate = (loc: string) => {
+        setActive(false);
+        navigate(loc);
+    }
+
     return (
         <Navbar
             onclickHamburger={handleHamburgerClick}
             visible={active}
             navItems={[
-                { icon: 'home', onclick: () => navigate('/') },
-                { icon: 'games', onclick: () => navigate('/games') },
-                { icon: 'music', onclick: () => navigate('/music') },
-                { icon: 'projects', onclick: () => navigate('/projects') },
+                { icon: 'home', onclick: () => handleNavigate('/') },
+                { icon: 'games', onclick: () => handleNavigate('/games') },
+                { icon: 'music', onclick: () => handleNavigate('/music') },
+                { icon: 'projects', onclick: () => handleNavigate('/projects') },
             ]}
         />
     );

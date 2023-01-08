@@ -5,6 +5,7 @@ import me from '../../assets/img/me-min.jpg';
 import visions from '../../assets/img/visions-fbcom.png';
 import journey from '../../assets/img/journey.png';
 import dlb from '../../assets/img/dlb.png';
+import { OneLineSVG } from '../../components/OneLineSVG/OneLineSVG';
 
 type HomePageProps = {};
 
@@ -28,6 +29,9 @@ export const HomePage = (props: HomePageProps) => {
                 <a href="https://felixbole.bandcamp.com/album/journey" target={'_blank'}>
                     <i className="fa-brands fa-bandcamp"></i>
                 </a>
+                <a href="https://felixbole.itch.io/" target={'_blank'}>
+                    <i className="fa-brands fa-itch-io"></i>
+                </a>
             </div>
         );
     };
@@ -39,10 +43,11 @@ export const HomePage = (props: HomePageProps) => {
                     <div className={Styles.presentation}>
                         <h1>Felix Bole</h1>
                         <h2>
-                            Felix is a fullstack developer, music composer, sound designer and indie game developer
+                            Fullstack developer, music composer, sound designer and indie game developer
                             based in France.
                         </h2>
                         <>{socials('desktop')}</>
+                        <OneLineSVG />
                     </div>
                     <div className={Styles.image}>
                         <img src={me} alt="" />
@@ -91,7 +96,7 @@ export const HomePage = (props: HomePageProps) => {
                         <h3>Music</h3>
                         <div>
                             <p>
-                                Having started at the same time he learned to walk, music has always been a central
+                                Music has always been a central
                                 element in Felix's life. He played for a couple years with Le Horla, a french band that
                                 managed to reach the finals of the french Emergenza contest.
                             </p>
@@ -119,7 +124,7 @@ export const HomePage = (props: HomePageProps) => {
                     </div>
                 </div>
             </section>
-            <section className={Styles.sectionGames} id="tmp">
+            <section className={Styles.sectionGames}>
                 <div className={Styles.sectionContent}>
                     <h2>Indie game development</h2>
                     <div>
@@ -134,14 +139,14 @@ export const HomePage = (props: HomePageProps) => {
                             out ideas and a fully-fledged indie game is currently in the works.
                         </p>
                         <p>
-                            After a year learning Unity, in 2021, he made a small puzzle game in a self-assigned game
+                            After a year learning Unity, in 2020, he made a small puzzle game in a self-assigned game
                             jam lasting a week to see what would come out of it. Don't look back, a puzzle game where
                             you can only move forwards unless certain conditions are met is the result of this.
                             Everything, from the code to the art, the sound, the visual effects and the music was made
                             by him during this time frame.
                         </p>
                         <div className={Styles.imgContainer}>
-                            <a href="#tmp">
+                            <a href="https://felixbole.itch.io/dlb" target={"_blank"}>
                                 <img src={dlb} alt="Don't look back" />
                             </a>
                         </div>

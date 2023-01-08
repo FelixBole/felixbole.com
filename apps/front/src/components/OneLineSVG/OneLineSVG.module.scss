@@ -1,0 +1,22 @@
+.OneLineSVG {
+    @media (max-width: 600px) {
+        margin: 15px 0;
+        height: 50px;
+        stroke-width: 3;
+    }
+
+    path {
+        stroke-dasharray: 1007;
+        stroke-dashoffset: 1007;
+        stroke-width: 2;
+
+        animation: anim 10s linear infinite;
+        -webkit-animation: anim 10s linear infinite;
+    }
+}
+
+@keyframes anim {
+    100% {
+        stroke-dashoffset: -1007;
+    }
+}

@@ -3,24 +3,22 @@ import { Button, Input } from 'ui';
 import { serverCall } from '../../utils/serverCall';
 import Styles from './SetupPage.module.scss';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 type SetupPageProps = {};
 
 export const SetupPage = (props: SetupPageProps) => {
+    const { game } = useParams();
     const [roomIDInput, setRoomIDInput] = useState<string>('');
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const navigate = useNavigate();
 
     const startGame = async () => {
-        // ASK SERVER TO INIT A GAME AND A ROOM ID
-        const gameData = await serverCall.GET('/set/newgame');
-
-        // NAVIGATE TO THE /game/roomId received
-        navigate('/games/set/' + gameData.roomId);
+        const gameData = await serverCall.GET(`/${game}/newgame`);
+        navigate(`/games/web/${game}/${gameData.roomId}`);
     };
 
     const joinGame = async () => {
-        navigate('/games/set/' + roomIDInput);
+        navigate(`/games/web/${game}/${roomIDInput}`);
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,7 +27,7 @@ export const SetupPage = (props: SetupPageProps) => {
 
     const logout = async () => {
         await serverCall.DELETE('/logout');
-        location.reload();
+        navigate('/games')
     };
 
     return (

@@ -13,4 +13,9 @@ html {
 
 body {
 	min-height: 100vh;
+	overflow-x: hidden;
+}
+
+.bgBlack {
+	background-color: rgb(20, 20, 20);
 }

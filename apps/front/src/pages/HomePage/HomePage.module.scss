@@ -1,5 +1,4 @@
-$black: rgb(20, 20, 20);
-$white: #ececec;
+@import '../../shared/styles/colors';
 
 .HomePage {
     background: $black;
@@ -30,19 +29,23 @@ $white: #ececec;
         }
 
         a:nth-child(1):hover i {
-            color: gray;
+            color: $cGithub;
         }
 
         a:nth-child(2):hover i {
-            color: #ff0000;
+            color: $cYouTube;
         }
 
         a:nth-child(3):hover i {
-            color: #1da1f2;
+            color: $cTwitter;
         }
 
         a:nth-child(4):hover i {
-            color: #629aa9;
+            color: $cBandcamp;
+        }
+
+        a:nth-child(5):hover i {
+            color: $cItchio;
         }
     }
 
@@ -192,6 +195,10 @@ $white: #ececec;
 }
 
 @media (max-width: 600px) {
+    .HomePage {
+        padding-bottom: 60px;
+    }
+
     header {
         .main {
             flex-direction: column;
