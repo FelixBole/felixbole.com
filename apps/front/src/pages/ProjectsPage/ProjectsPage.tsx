@@ -69,6 +69,7 @@ export const ProjectsPage = (props: ProjectsPageProps) => {
                     <div className={Styles.bg}>
                         {Array(4).fill(1).map((el, idx) => (
                             <svg
+                                key={`svg-${idx}`}
                                 width="171"
                                 height="377"
                                 viewBox="0 0 171 377"
