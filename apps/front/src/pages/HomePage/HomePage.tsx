@@ -1,5 +1,6 @@
 import React from 'react';
 import Styles from './HomePage.module.scss';
+import Animations from '../../shared/styles/modules/animations.module.scss';
 
 import me from '../../assets/img/me-min.jpg';
 import visions from '../../assets/img/visions-fbcom.png';
@@ -41,10 +42,12 @@ export const HomePage = (props: HomePageProps) => {
             <header dir="ltr">
                 <div className={Styles.main}>
                     <div className={Styles.presentation}>
-                        <h1>Felix Bole</h1>
+                        <div className={Animations.animatedHighlight}>
+                            <h1>Felix Bole</h1>
+                        </div>
                         <h2>
-                            Fullstack developer, music composer, sound designer and indie game developer
-                            based in France.
+                            Fullstack developer, music composer, sound designer and indie game developer based in
+                            France.
                         </h2>
                         <>{socials('desktop')}</>
                         <OneLineSVG />
@@ -96,9 +99,9 @@ export const HomePage = (props: HomePageProps) => {
                         <h3>Music</h3>
                         <div>
                             <p>
-                                Music has always been a central
-                                element in Felix's life. He played for a couple years with Le Horla, a french band that
-                                managed to reach the finals of the french Emergenza contest.
+                                Music has always been a central element in Felix's life. He played for a couple years
+                                with Le Horla, a french band that managed to reach the finals of the french Emergenza
+                                contest.
                             </p>
                             <p>
                                 On his side, Felix is a music composer with a style that suits best video games or
@@ -146,7 +149,7 @@ export const HomePage = (props: HomePageProps) => {
                             by him during this time frame.
                         </p>
                         <div className={Styles.imgContainer}>
-                            <a href="https://felixbole.itch.io/dlb" target={"_blank"}>
+                            <a href="https://felixbole.itch.io/dlb" target={'_blank'}>
                                 <img src={dlb} alt="Don't look back" />
                             </a>
                         </div>

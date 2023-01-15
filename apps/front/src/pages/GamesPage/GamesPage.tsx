@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, GameCard } from 'ui';
 import Styles from './GamesPage.module.scss';
+import Animations from '../../shared/styles/modules/animations.module.scss';
 
 import dlb_banner from '../../assets/img/banner_dlb.png';
 import set_banner from '../../assets/svg/set.svg';
@@ -19,7 +20,9 @@ export const GamesPage = (props: GamesPageProps) => {
     return (
         <div className={Styles.GamesPage}>
             <section className={Styles.unity}>
-                <h1>All my games</h1>
+                <div className={Animations.animatedHighlight}>
+                    <h1>Games I made</h1>
+                </div>
                 <div className={Styles.container}>
                     <div className={Styles.bannerCard} style={{ backgroundImage: `url(${dlb_banner})` }}>
                         <div>
@@ -27,7 +30,9 @@ export const GamesPage = (props: GamesPageProps) => {
                             <small>Unity C#</small>
                         </div>
                         <div>
-                            <a href="https://felixbole.itch.io/dlb" target={'_blank'}>Learn more</a>
+                            <a href="https://felixbole.itch.io/dlb" target={'_blank'}>
+                                Learn more
+                            </a>
                             <Button onclick={() => (location.href = 'https://felixbole.itch.io/dlb')}>Play</Button>
                         </div>
                     </div>

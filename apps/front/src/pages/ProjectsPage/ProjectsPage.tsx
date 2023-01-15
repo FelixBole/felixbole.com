@@ -1,79 +1,104 @@
 import React, { useState } from 'react';
+import { Project, projects } from '../../data/projects';
 import Styles from './ProjectsPage.module.scss';
+import Animations from '../../shared/styles/modules/animations.module.scss';
 
-type ProjectProps = {
+type ProjectElementProps = {
     className?: string;
-    name: string;
-    github?: string;
-    description: string;
-    image?: string;
-    date: string;
+    project: Project;
+    playAnim: boolean;
 };
 
-const Project = ({ name, github, description, image, date, className }: ProjectProps) => {
+const ProjectElement = ({ className, project, playAnim }: ProjectElementProps) => {
+    const { name, description, date, github, website } = project;
+    const classNames = playAnim ? Animations.animatedHighlight : '';
+
     return (
         <div className={`${Styles.project} ${className || ''}`}>
-            <h5>
-                {name}{' '}
-                {github && (
-                    <a href={github}>
-                        <i className="fa-brands fa-github"></i>
-                    </a>
-                )}
-            </h5>
+            <div className={classNames}>
+                <h5>{name}</h5>
+            </div>
             <small>{date}</small>
+            {github && (
+                <a href={github} style={{ paddingLeft: '10px' }}>
+                    <i className="fa-brands fa-github"></i>
+                </a>
+            )}
             <p>{description}</p>
+            {website && (
+                <div className={Styles.highlightableLink}>
+                    <a href={website}>Go to project</a>
+                </div>
+            )}
         </div>
     );
 };
-
-const projects = [
-    <Project
-        name={'felixbole.com'}
-        description={
-            'This current website. As I learned React in the past year I decided to redo my website entirely using React running on a backend node express server. This project came from an attempt to understand monorepos (turborepo) and their architecture.'
-        }
-        github={'https://github.com/FelixBole/felixbole.com'}
-        date={'2022-2023'}
-    />,
-    <Project
-        name={'NotificationToaster'}
-        description={
-            'A lightweight library in Vanilla JS to simplify creating toast notifications. Built initially for my personnal needs, ended up adding some customization options and is now used in Visions, the company I work for.'
-        }
-        github={'https://github.com/FelixBole/notificationtoaster'}
-        date={'2022'}
-    />,
-    <Project
-        name={'Tour.js'}
-        description={
-            'A lightweight library that will allow you to easily create interactive guides in your website or web application. Just vanilla JS, no frameworks required.'
-        }
-        github={'https://github.com/FelixBole/tour.js'}
-        date={'2021'}
-    />,
-];
 
 type ProjectsPageProps = {};
 
 export const ProjectsPage = (props: ProjectsPageProps) => {
     const [selected, setSelected] = useState<number>(0);
+    const [isChangingProject, setIsChangingProject] = useState<boolean>(false);
+    const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
+    const [isFadingIn, setIsFadingIn] = useState<boolean>(true);
+    const [playAnim, setPlayAnim] = useState<boolean>(true);
+
+    const handleProjectChange = (index: number) => {
+        if (isChangingProject || index === selected) return;
+        setIsChangingProject(true);
+        setIsFadingIn(false);
+        setIsFadingOut(true);
+        setPlayAnim(false);
+
+        setTimeout(() => {
+            setIsFadingOut(false);
+            setIsFadingIn(true);
+            setSelected(index);
+            setIsChangingProject(false);
+            setPlayAnim(true);
+        }, 500);
+    };
+
+    const project = projects[selected];
+    const classNames = `${isFadingIn ? Styles.fadeIn : ''} ${isFadingOut ? Styles.fadeOut : ''}`;
 
     return (
         <div className={Styles.ProjectsPage}>
             <div className={Styles.pageContent}>
                 <header>
-                    <h1>Dev Projects</h1>
-                    <h2>Projects I work on when I'm not at work</h2>
-                    <h6>This page is a work in progress. Things do not work as expected yet.</h6>
+                    <div className={Styles.bg}>
+                        {Array(4).fill(1).map((el, idx) => (
+                            <svg
+                                width="171"
+                                height="377"
+                                viewBox="0 0 171 377"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={Styles[`bgSvg${(idx + 1).toString()}`]}
+                            >
+                                <path
+                                    d="M85.5001 0L147.5 124L170.804 260.25L0.196533 376.5L0.196609 260.25L85.5001 0Z"
+                                    fill="#862D86"
+                                />
+                            </svg>
+                        ))}
+                    </div>
+                    <div className={Styles.content}>
+                        <h1>Dev Projects</h1>
+                        <h2>Selected work from everything I do in web</h2>
+                    </div>
                 </header>
                 <section>
                     <div className={Styles.projectsContainer}>
-                        <div className={Styles.projects}>{projects[selected]}</div>
+                        <div className={Styles.projects}>
+                            <ProjectElement className={classNames} project={project} playAnim={playAnim} />
+                        </div>
                         <div className={Styles.controls}>
-                            <span onClick={() => setSelected(0)}>FelixBole.com</span>
-                            <span onClick={() => setSelected(1)}>NotificationToaster</span>
-                            <span onClick={() => setSelected(2)}>Tour.js</span>
+                            {projects.map((project, idx) => (
+                                <span onClick={() => handleProjectChange(idx)} key={project.name}>
+                                    {project.name.toUpperCase()}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </section>

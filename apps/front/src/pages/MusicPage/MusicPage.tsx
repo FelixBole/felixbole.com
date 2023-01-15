@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Styles from './MusicPage.module.scss';
+import Animations from '../../shared/styles/modules/animations.module.scss';
 
 type MusicPageProps = {};
 
@@ -11,7 +12,9 @@ export const MusicPage = (props: MusicPageProps) => {
         <div className={`${Styles.MusicPage} bgBlack`}>
             <header>
                 <div>
-                    <h1>Music and sound</h1>
+                    <div className={Animations.animatedHighlight}>
+                        <h1>Music and sound</h1>
+                    </div>
                     <h2>Discover my work in music</h2>
                 </div>
                 <div>
@@ -61,7 +64,10 @@ export const MusicPage = (props: MusicPageProps) => {
                                 on several short-films, some of which receiving prizes in amateur festivals.
                             </p>
                         </div>
-                        <div className={`${Styles.stuffCard} ${Styles.stuffCardClickable}`} onClick={() => navigate('/games')}>
+                        <div
+                            className={`${Styles.stuffCard} ${Styles.stuffCardClickable}`}
+                            onClick={() => navigate('/games')}
+                        >
                             <h4>
                                 Games <i className="fa-solid fa-gamepad"></i>
                             </h4>
@@ -76,8 +82,8 @@ export const MusicPage = (props: MusicPageProps) => {
                                     Soundcloud <i className="fa-brands fa-soundcloud" />
                                 </h4>
                                 <p>
-                                    Along with my own Indie game dev projects, I have worked with indie dev teams in the
-                                    past on game projects on both sound design and music.
+                                    Soundcloud holds my album and some of the music I do for other situations, as well
+                                    as music I just post because I want to without any purpose.
                                 </p>
                             </div>
                         </a>

@@ -11,7 +11,6 @@ type NavbarProps = {
 };
 
 export const Navbar = ({
-    bg = 'black',
     navItems,
     visible = true,
     showLocation = false,
